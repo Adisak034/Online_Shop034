@@ -1,4 +1,4 @@
-g<?php
+<?php
 require_once 'config.php';
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
     // รับค่าจากฟอร์ม
