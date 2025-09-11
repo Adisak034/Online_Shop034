@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once '../config.php';
 require_once 'auth_admin.php';
 // ตรวจสอบสิทธิ์admin
@@ -37,26 +36,32 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             background: white;
             min-height: 100vh;
         }
+
         .card {
             transition: transform 0.3s, box-shadow 0.3s;
             border: none;
             border-radius: 15px;
         }
+
         .card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
+
         .table {
             background-color: white;
             border-radius: 10px;
             overflow: hidden;
         }
+
         .btn {
             border-radius: 8px;
         }
+
         .navbar-brand {
             font-weight: bold;
         }
+
         .breadcrumb {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
@@ -79,17 +84,21 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </a>
                     <ul class="dropdown-menu">
                         <li><span class="dropdown-item-text">ผู้ดูแลระบบ</span></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item" href="../index.php">
-                            <i class="bi bi-house"></i> กลับหน้าหลัก
-                        </a></li>
+                                <i class="bi bi-house"></i> กลับหน้าหลัก
+                            </a></li>
                         <li><a class="dropdown-item" href="index.php">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item text-danger" href="../logout.php">
-                            <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
-                        </a></li>
+                                <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
+                            </a></li>
                     </ul>
                 </div>
             </div>
@@ -159,16 +168,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <div class="badge bg-primary fs-6">
                                         <i class="bi bi-people"></i> ทั้งหมด: <?= count($users) ?> คน
                                     </div>
-                                    <div class="badge bg-success fs-6">
-                                        <i class="bi bi-person-check"></i> สมาชิกใหม่วันนี้: 
-                                        <?php 
-                                        $today = date('Y-m-d');
-                                        $newToday = array_filter($users, function($user) use ($today) {
-                                            return date('Y-m-d', strtotime($user['created_at'])) === $today;
-                                        });
-                                        echo count($newToday);
-                                        ?>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -216,18 +215,22 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     </small>
                                                 </td>
                                                 <td class="text-center">
-                                                    <div class="btn-group" role="group">
-                                                        <a href="edit_user.php?id=<?= $user['user_id'] ?>" 
-                                                           class="btn btn-sm btn-outline-warning" 
-                                                           title="แก้ไขข้อมูล">
+                                                    <div role="group" style="display:inline;">
+                                                        <a href="edit_user.php?id=<?= $user['user_id'] ?>"
+                                                            class="btn btn-sm btn-outline-warning"
+                                                            title="แก้ไขข้อมูล">
                                                             <i class="bi bi-pencil"></i>
                                                         </a>
-                                                        <a href="users.php?delete=<?= $user['user_id'] ?>" 
-                                                           class="btn btn-sm btn-outline-danger"
-                                                           title="ลบสมาชิก"
-                                                           onclick="return confirm('คุณต้องการลบสมาชิก <?= htmlspecialchars($user['username']) ?> หรือไม่?\n\nการดำเนินการนี้ไม่สามารถย้อนกลับได้!')">
+                                                        <!-- <a href="users.php?delete=<?= $user['user_id'] ?>"
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            title="ลบสมาชิก"
+                                                            onclick="return confirm('คุณต้องการลบสมาชิก <?= htmlspecialchars($user['username']) ?> หรือไม่?\n\nการดำเนินการนี้ไม่สามารถย้อนกลับได้!')">
                                                             <i class="bi bi-trash"></i>
-                                                        </a>
+                                                        </a> -->
+                                                        <form action="delUser_Sweet.php" method="POST" style="display:inline;">
+                                                            <input type="hidden" name="u_id" value="<?php echo $user['user_id']; ?>">
+                                                            <button type="button" class="delete-button btn btn-outline-danger btn-sm " data-user-id="<?php echo $user['user_id']; ?>"><i class="bi bi-trash"></i></button>
+                                                        </form>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -237,7 +240,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                         </div>
                         <div class="card-footer bg-light text-muted text-center">
-                           
+
                         </div>
                     </div>
                 <?php endif; ?>
@@ -246,15 +249,55 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
+    <!-- <footer class="bg-dark text-white py-4 mt-5">
         <div class="container text-center">
             <p class="mb-0">&copy; Adisak Yongpanya 664230034 66/46</p>
         </div>
-    </footer>
+    </footer> -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous">
     </script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    
+
+    <script>
+        // ฟังกชันสำหรับแสดงกล่องยืนยัน SweetAlert2
+        function showDeleteConfirmation(userId) {
+            Swal.fire({
+                title: 'คุณแน่ใจหรือไม่?',
+                text: 'คุณจะไม่สามารถเรียกคืนข้อมูลกลับได้!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ลบ',
+                cancelButtonText: 'ยกเลิก',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // หากผู้ใช้ยืนยัน ให้ส่งค่าฟอร์มไปยัง delete.php เพื่อลบข้อมูล
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'delUser_Sweet.php';
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'u_id';
+                    input.value = userId;
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+        // แนบตัวตรวจจับเหตุการณ์คลิกกับองค์ปุ่มลบทั้งหมดที่มีคลาส delete-button
+        const deleteButtons = document.querySelectorAll('.delete-button');
+        deleteButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-user-id');
+                showDeleteConfirmation(userId);
+            });
+        });
+    </script>
+
 </body>
 
 </html>
