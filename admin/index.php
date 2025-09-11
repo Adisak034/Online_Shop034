@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 require_once '../config.php';
 require_once 'auth_admin.php';
 ?>
@@ -143,7 +143,7 @@ require_once 'auth_admin.php';
                         </div>
                         <h5 class="card-title">จัดการหมวดหมู่</h5>
                         <p class="card-text text-muted">จัดการหมวดหมู่สินค้า</p>
-                        <a href="categories.php" class="btn btn-dark btn-lg w-100">
+                        <a href="category.php" class="btn btn-dark btn-lg w-100">
                             <i class="bi bi-arrow-right-circle"></i> เข้าจัดการ
                         </a>
                     </div>
