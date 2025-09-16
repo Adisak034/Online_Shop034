@@ -25,7 +25,7 @@ exit;
 // // ผ่านเงื่อนไข: มีชื่อสินค้า และ ราคามากกว่า 0
 // }
 }
-// ลบสนิ คำ้
+// ลบสินค้า
 if (isset($_GET['delete'])) {
 $product_id = $_GET['delete'];
 $stmt = $conn->prepare("DELETE FROM products WHERE product_id = ?");
@@ -43,71 +43,261 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<title>จัดการสินค้า</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการสินค้า</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+          body {
+            background: white;
+            min-height: 100vh;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .admin-card {
+            border: none;
+            border-radius: 15px;
+        }
+        .admin-card .card-body {
+            padding: 2rem;
+            text-align: center;
+        }
+        .admin-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+    </style>
 </head>
-<body class="container mt-4">
-<h2>จัดการสินค้า</h2>
-<a href="index.php" class="btn btn-secondary mb-3">← กลับหน้าผู้ดูแล</a>
-<!-- ฟอรม์ เพิ่มสินค้าใหม่ -->
-<form method="post" class="row g-3 mb-4">
-<h5>เพิ่มสินค้าใหม่</h5>
-<div class="col-md-4">
-<input type="text" name="product_name" class="form-control" placeholder="ชื่อสินค้า"
-required>
-</div>
-<div class="col-md-2">
-<input type="number" step="0.01" name="price" class="form-control" placeholder="ราคา"
-required>
-</div>
-<div class="col-md-2">
-<input type="number" name="stock" class="form-control" placeholder="จำนวน" required>
-</div>
-<div class="col-md-2">
-<select name="category_id" class="form-select" required>
-<option value="">เลือกหมวดหมู่</option>
-<?php foreach ($categories as $cat): ?>
-<option value="<?= $cat['category_id'] ?>"><?= htmlspecialchars($cat['category_name']) ?></option>
-<?php endforeach; ?>
-</select>
-</div>
-<div class="col-12">
-<textarea name="description" class="form-control" placeholder="รายละเอียดสินค้า"
-rows="2"></textarea>
-</div>
-<div class="col-12">
-<button type="submit" name="add_product" class="btn btn-primary">เพิ่มสินค้า</button>
-</div>
-</form>
-<!-- แสดงรายการสินค้า , แก้ไข , ลบ -->
-<h5>รายการสินค้า</h5>
-<table class="table table-bordered">
-<thead>
-<tr>
-<th>ชื่อสินค้า</th>
-<th>หมวดหมู่</th>
-<th>ราคา</th>
-<th>คงเหลือ</th>
-<th>จัดการ</th>
-</tr>
-</thead>
-<tbody>
-<?php foreach ($products as $p): ?>
-<tr>
-<td><?= htmlspecialchars($p['product_name']) ?></td>
-<td><?= htmlspecialchars($p['category_name']) ?></td>
-<td><?= number_format($p['price'], 2) ?> บาท</td>
-<td><?= $p['stock'] ?></td>
-<td>
-<a href="products.php?delete=<?= $p['product_id'] ?>" class="btn btn-sm btn-danger"
-onclick="return confirm('ยืนยันการลบสินค้านี้?')">ลบ</a>
-<a href="edit_product.php?id=<?= $p['product_id'] ?>" class="btn btn-sm btn-warning">แก้ไข</a>
-</td>
-</tr>
-<?php endforeach; ?>
-</tbody>
-</table>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">
+                <i class="bi bi-shield-check"></i> ระบบผู้ดูแลระบบ
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['username']) ?>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><span class="dropdown-item-text">ผู้ดูแลระบบ</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="../index.php">
+                            <i class="bi bi-house"></i> กลับหน้าหลัก
+                        </a></li>
+                        <li><a class="dropdown-item" href="index.php">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="../logout.php">
+                            <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <!-- Welcome Section -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card admin-card shadow-lg">
+                    <div class="card-body">
+                        <h1 class="display-5 text-primary mb-3">
+                            <i class="bi bi-box-seam"></i> จัดการสินค้า
+                        </h1>
+                        <p class="lead text-muted">
+                            จัดการข้อมูลสินค้าในระบบ - <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>
+                        </p>
+                        <div class="badge bg-success fs-6">
+                            <i class="bi bi-shop"></i> Product Management
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Product Form -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card admin-card shadow-lg">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-plus-circle"></i> เพิ่มสินค้าใหม่
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" class="row g-3">
+                            <div class="col-md-6">
+                                <label for="product_name" class="form-label">ชื่อสินค้า</label>
+                                <input type="text" name="product_name" id="product_name" class="form-control" placeholder="ชื่อสินค้า" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="price" class="form-label">ราคา</label>
+                                <input type="number" step="0.01" name="price" id="price" class="form-control" placeholder="0.00" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="stock" class="form-label">จำนวน</label>
+                                <input type="number" name="stock" id="stock" class="form-control" placeholder="0" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="category_id" class="form-label">หมวดหมู่</label>
+                                <select name="category_id" id="category_id" class="form-select" required>
+                                    <option value="">เลือกหมวดหมู่</option>
+                                    <?php foreach ($categories as $cat): ?>
+                                    <option value="<?= $cat['category_id'] ?>"><?= htmlspecialchars($cat['category_name']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="description" class="form-label">รายละเอียดสินค้า</label>
+                                <textarea name="description" id="description" class="form-control" rows="3" placeholder="รายละเอียดสินค้า"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" name="add_product" class="btn btn-success btn-lg">
+                                    <i class="bi bi-plus-circle"></i> เพิ่มสินค้า
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Products Table Section -->
+        <div class="row">
+            <div class="col-12">
+                <?php if (count($products) === 0): ?>
+                    <div class="card admin-card shadow-lg">
+                        <div class="card-body text-center py-5">
+                            <div class="admin-icon text-muted">
+                                <i class="bi bi-inbox"></i>
+                            </div>
+                            <h3 class="text-muted">ยังไม่มีสินค้าในระบบ</h3>
+                            <p class="text-muted">เพิ่มสินค้าใหม่โดยใช้ฟอร์มด้านบน</p>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <div class="card admin-card shadow-lg">
+                        <div class="card-header bg-primary text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-list-ul"></i> รายการสินค้า
+                                </h5>
+                                <div class="d-flex gap-3">
+                                    <div class="badge bg-light text-dark fs-6">
+                                        <i class="bi bi-box-seam"></i> ทั้งหมด: <?= count($products) ?> รายการ
+                                    </div>
+                                    <div class="badge bg-success fs-6">
+                                        <i class="bi bi-check-circle"></i> สินค้าใหม่วันนี้: 
+                                        <?php 
+                                        $today = date('Y-m-d');
+                                        $newToday = array_filter($products, function($product) use ($today) {
+                                            return date('Y-m-d', strtotime($product['created_at'])) === $today;
+                                        });
+                                        echo count($newToday);
+                                        ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th scope="col">
+                                                <i class="bi bi-box"></i> ชื่อสินค้า
+                                            </th>
+                                            <th scope="col">
+                                                <i class="bi bi-tags"></i> หมวดหมู่
+                                            </th>
+                                            <th scope="col">
+                                                <i class="bi bi-currency-dollar"></i> ราคา
+                                            </th>
+                                            <th scope="col">
+                                                <i class="bi bi-boxes"></i> คงเหลือ
+                                            </th>
+                                            <th scope="col" class="text-center">
+                                                <i class="bi bi-gear"></i> จัดการ
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($products as $p): ?>
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                        <strong><?= htmlspecialchars($p['product_name']) ?></strong>
+                                                        <br>
+                                                        <small class="text-muted">ID: <?= $p['product_id'] ?></small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-secondary">
+                                                        <?= htmlspecialchars($p['category_name'] ?? 'ไม่มีหมวดหมู่') ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="fw-bold text-success">
+                                                        <?= number_format($p['price'], 2) ?> บาท
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <?php if ($p['stock'] > 10): ?>
+                                                        <span class="badge bg-success"><?= $p['stock'] ?> ชิ้น</span>
+                                                    <?php elseif ($p['stock'] > 0): ?>
+                                                        <span class="badge bg-warning"><?= $p['stock'] ?> ชิ้น</span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-danger">หมด</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="btn-group" role="group">
+    </div>                                                    <a href="edit_product.php?id=<?= $p['product_id'] ?>" 
+                                                           class="btn btn-sm btn-outline-warning" 
+                                                           title="แก้ไขสินค้า">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </a>
+                                                        
+                                                        <a href="products.php?delete=<?= $p['product_id'] ?>" 
+                                                           class="btn btn-sm btn-outline-danger"
+                                                           title="ลบสินค้า"
+                                                           onclick="return confirm('ต้องการลบสินค้า <?= htmlspecialchars($p['product_name']) ?> ?\n\nการดำเนินการนี้ไม่สามารถย้อนกลับได้!')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light text-muted text-center">
+                            <small>
+                                <i class="bi bi-info-circle"></i> 
+                                สามารถแก้ไขหรือลบข้อมูลสินค้าได้ตามต้องการ
+                            </small>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous">
+    </script>
 </body>
 </html>

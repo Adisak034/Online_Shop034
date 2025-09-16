@@ -104,47 +104,144 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แก้ไขสมาชิก</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: white;
+            min-height: 100vh;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .admin-card {
+            border: none;
+            border-radius: 15px;
+        }
+        .admin-card .card-body {
+            padding: 2rem;
+            text-align: center;
+        }
+        .admin-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+    </style>
 </head>
 
-<body class="container mt-4">
-    <h2>แก้ไขข้อมูลสมาชิก</h2>
-    <a href="users.php" class="btn btn-secondary mb-3">← กลับหน้ารายชื่อสมาชิก</a>
-    <?php if (isset($error)): ?>
-        <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
-    <form method="post" class="row g-3">
-        <div class="col-md-6">
-            <label class="form-label">ชื่อผู้ใช้</label>
-            <input type="text" name="username" class="form-control" required value="<?=
-                                                                                    htmlspecialchars($user['username']) ?>">
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">
+                <i class="bi bi-shield-check"></i> ระบบผู้ดูแลระบบ
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['username']) ?>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><span class="dropdown-item-text">ผู้ดูแลระบบ</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="../index.php">
+                            <i class="bi bi-house"></i> กลับหน้าหลัก
+                        </a></li>
+                        <li><a class="dropdown-item" href="index.php">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="../logout.php">
+                            <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6">
-            <label class="form-label">ชื่อ - นามสกุล</label>
-            <input type="text" name="full_name" class="form-control" value="<?=
-                                                                            htmlspecialchars($user['full_name']) ?>">
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">อีเมล</label>
-            <input type="email" name="email" class="form-control" required value="<?=
-                                                                                    htmlspecialchars($user['email']) ?>">
-        </div>
-       
-        <div class="col-md-6">
-            <label class="form-label">รหัสผ่านใหม่ <small class="text-muted">(ถ้าหากไม่ต้องการเปลี่ยน ให้เว้นว่าง)
-                </small></label>
-            <input type="password" name="password" class="form-control">
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">ยืนยันรหัสผ่านใหม่</label>
-            <input type="password" name="confirm_password" class="form-control">
-        </div>
-         <div class="col-12">
-            <button type="submit" class="btn btn-primary">บันทึกการแก้ไข</button>
+    </nav>
+
+    <div class="container mt-5">
+
+        <!-- Back Button -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <a href="users.php" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> กลับหน้ารายชื่อสมาชิก
+                </a>
+            </div>
         </div>
 
-    </form>
+        <!-- Alert Messages -->
+        <?php if (isset($error)): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <!-- Edit User Form -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card admin-card shadow-lg">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-pencil-square"></i> ฟอร์มแก้ไขข้อมูล
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" class="row g-3">
+                            <div class="col-md-6">
+                                <label for="username" class="form-label">ชื่อผู้ใช้</label>
+                                <input type="text" name="username" id="username" class="form-control" required 
+                                       value="<?= htmlspecialchars($user['username']) ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="full_name" class="form-label">ชื่อ - นามสกุล</label>
+                                <input type="text" name="full_name" id="full_name" class="form-control" 
+                                       value="<?= htmlspecialchars($user['full_name']) ?>">
+                            </div>
+                            <div class="col-12">
+                                <label for="email" class="form-label">อีเมล</label>
+                                <input type="email" name="email" id="email" class="form-control" required 
+                                       value="<?= htmlspecialchars($user['email']) ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">รหัสผ่านใหม่</label>
+                                <input type="password" name="password" id="password" class="form-control">
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i> ถ้าไม่ต้องการเปลี่ยนรหัสผ่าน ให้เว้นว่างไว้
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirm_password" class="form-label">ยืนยันรหัสผ่านใหม่</label>
+                                <input type="password" name="confirm_password" id="confirm_password" class="form-control">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-warning btn-lg">
+                                    <i class="bi bi-check-circle"></i> บันทึกการแก้ไข
+                                </button>
+                                <a href="users.php" class="btn btn-secondary btn-lg ms-2">
+                                    <i class="bi bi-x-circle"></i> ยกเลิก
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 
 </html>

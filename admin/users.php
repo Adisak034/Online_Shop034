@@ -32,40 +32,31 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body {
+  body {
             background: white;
             min-height: 100vh;
         }
-
         .card {
             transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .admin-card {
             border: none;
             border-radius: 15px;
         }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        .admin-card .card-body {
+            padding: 2rem;
+            text-align: center;
         }
-
-        .table {
-            background-color: white;
-            border-radius: 10px;
-            overflow: hidden;
+        .admin-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
-
-        .btn {
-            border-radius: 8px;
-        }
-
         .navbar-brand {
             font-weight: bold;
-        }
-
-        .breadcrumb {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
         }
     </style>
 </head>
@@ -105,68 +96,59 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </nav>
 
-    <div class="container mt-4">
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="index.php" class="text-decoration-none">
-                        <i class="bi bi-speedometer2"></i> Dashboard
-                    </a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">
-                    <i class="bi bi-people"></i> จัดการสมาชิก
-                </li>
-            </ol>
-        </nav>
-
-        <!-- Header Card -->
-        <div class="row mb-4">
+    <div class="container mt-5">
+        <!-- Welcome Section -->
+        <div class="row mb-5">
             <div class="col-12">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-warning text-dark">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h2 class="mb-0">
-                                    <i class="bi bi-people"></i> จัดการสมาชิก
-                                </h2>
-                                <small class="text-muted">จัดการข้อมูลสมาชิกในระบบ</small>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <a href="index.php" class="btn btn-secondary">
-                                    <i class="bi bi-arrow-left"></i> กลับ Dashboard
-                                </a>
-                                <a href="../index.php" class="btn btn-info">
-                                    <i class="bi bi-house"></i> หน้าหลัก
-                                </a>
-                            </div>
+                <div class="card admin-card shadow-lg">
+                    <div class="card-body">
+                        <h1 class="display-5 text-primary mb-3">
+                            <i class="bi bi-box-seam"></i> จัดการสินค้า
+                        </h1>
+                        <p class="lead text-muted">
+                            จัดการข้อมูลสินค้าในระบบ - <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>
+                        </p>
+                        <div class="badge bg-success fs-6">
+                            <i class="bi bi-shop"></i> Product Management
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Users Table -->
+        <!-- Users Table Section -->
         <div class="row">
             <div class="col-12">
                 <?php if (count($users) === 0): ?>
-                    <div class="card shadow">
+                    <div class="card admin-card shadow-lg">
                         <div class="card-body text-center py-5">
-                            <i class="bi bi-person-x display-1 text-muted"></i>
-                            <h3 class="text-muted mt-3">ยังไม่มีสมาชิกในระบบ</h3>
+                            <div class="admin-icon text-muted">
+                                <i class="bi bi-person-x"></i>
+                            </div>
+                            <h3 class="text-muted">ยังไม่มีสมาชิกในระบบ</h3>
                             <p class="text-muted">เมื่อมีผู้ใช้สมัครสมาชิก รายชื่อจะแสดงที่นี่</p>
                         </div>
                     </div>
                 <?php else: ?>
-                    <div class="card shadow-lg">
-                        <div class="card-header bg-light">
+                    <div class="card admin-card shadow-lg">
+                        <div class="card-header bg-primary text-white">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">
                                     <i class="bi bi-list-ul"></i> รายชื่อสมาชิก
                                 </h5>
                                 <div class="d-flex gap-3">
-                                    <div class="badge bg-primary fs-6">
+                                    <div class="badge bg-light text-dark fs-6">
                                         <i class="bi bi-people"></i> ทั้งหมด: <?= count($users) ?> คน
+                                    </div>
+                                    <div class="badge bg-success fs-6">
+                                        <i class="bi bi-check-circle"></i> สมาชิกใหม่วันนี้: 
+                                        <?php 
+                                        $today = date('Y-m-d');
+                                        $newToday = array_filter($users, function($user) use ($today) {
+                                            return date('Y-m-d', strtotime($user['created_at'])) === $today;
+                                        });
+                                        echo count($newToday);
+                                        ?>
                                     </div>
                                 </div>
                             </div>
@@ -203,33 +185,46 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                         <small class="text-muted">User ID: <?= $user['user_id'] ?></small>
                                                     </div>
                                                 </td>
-                                                <td><?= htmlspecialchars($user['full_name']) ?></td>
+                                                <td>
+                                                    <?php if ($user['full_name']): ?>
+                                                        <?= htmlspecialchars($user['full_name']) ?>
+                                                    <?php else: ?>
+                                                        <span class="text-muted fst-italic">ไม่ระบุ</span>
+                                                    <?php endif; ?>
+                                                </td>
                                                 <td>
                                                     <span class="badge bg-light text-dark">
                                                         <?= htmlspecialchars($user['email']) ?>
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <small class="text-muted">
-                                                        <?= date('d/m/Y H:i', strtotime($user['created_at'])) ?>
-                                                    </small>
+                                                    <?php 
+                                                    $createdAt = new DateTime($user['created_at']);
+                                                    $now = new DateTime();
+                                                    $diff = $now->diff($createdAt);
+                                                    
+                                                    if ($diff->days == 0) {
+                                                        echo '<span class="badge bg-success">วันนี้</span>';
+                                                    } elseif ($diff->days <= 7) {
+                                                        echo '<span class="badge bg-warning text-dark">' . $diff->days . ' วันที่แล้ว</span>';
+                                                    } else {
+                                                        echo '<small class="text-muted">' . date('d/m/Y', strtotime($user['created_at'])) . '</small>';
+                                                    }
+                                                    ?>
                                                 </td>
                                                 <td class="text-center">
-                                                    <div role="group" style="display:inline;">
+                                                    <div class="btn-group" role="group">
                                                         <a href="edit_user.php?id=<?= $user['user_id'] ?>"
                                                             class="btn btn-sm btn-outline-warning"
                                                             title="แก้ไขข้อมูล">
                                                             <i class="bi bi-pencil"></i>
                                                         </a>
-                                                        <!-- <a href="users.php?delete=<?= $user['user_id'] ?>"
-                                                            class="btn btn-sm btn-outline-danger"
-                                                            title="ลบสมาชิก"
-                                                            onclick="return confirm('คุณต้องการลบสมาชิก <?= htmlspecialchars($user['username']) ?> หรือไม่?\n\nการดำเนินการนี้ไม่สามารถย้อนกลับได้!')">
-                                                            <i class="bi bi-trash"></i>
-                                                        </a> -->
                                                         <form action="delUser_Sweet.php" method="POST" style="display:inline;">
-                                                            <input type="hidden" name="u_id" value="<?php echo $user['user_id']; ?>">
-                                                            <button type="button" class="delete-button btn btn-outline-danger btn-sm " data-user-id="<?php echo $user['user_id']; ?>"><i class="bi bi-trash"></i></button>
+                                                            <input type="hidden" name="u_id" value="<?= $user['user_id'] ?>">
+                                                            <button type="button" class="delete-button btn btn-outline-danger btn-sm" 
+                                                                    data-user-id="<?= $user['user_id'] ?>" title="ลบสมาชิก">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
                                                         </form>
                                                     </div>
                                                 </td>
@@ -240,7 +235,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                         </div>
                         <div class="card-footer bg-light text-muted text-center">
-
+                            <small>
+                                <i class="bi bi-info-circle"></i> 
+                                สามารถแก้ไขหรือลบข้อมูลสมาชิกได้ตามต้องการ
+                            </small>
                         </div>
                     </div>
                 <?php endif; ?>
