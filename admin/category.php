@@ -65,62 +65,202 @@ $categories = $conn->query("SELECT * FROM categories ORDER BY category_id ASC")-
 ?>
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>จัดการหมวดหมู่</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: white;
+            min-height: 100vh;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .admin-card {
+            border: none;
+            border-radius: 15px;
+        }
+        .admin-card .card-body {
+            padding: 2rem;
+            text-align: center;
+        }
+        .admin-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+    </style>
 </head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">
+                <i class="bi bi-shield-check"></i> ระบบผู้ดูแลระบบ
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['username']) ?>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><span class="dropdown-item-text">ผู้ดูแลระบบ</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="../index.php">
+                            <i class="bi bi-house"></i> กลับหน้าหลัก
+                        </a></li>
+                        <li><a class="dropdown-item" href="index.php">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="../logout.php">
+                            <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-<body class="container mt-4">
-    <h2>จัดการหมวดหมู่สินค้า</h2>
-    <?php if (isset($_SESSION['error'])): ?>
-        <div class="alert alert-danger"><?= $_SESSION['error'] ?></div>
-        <?php unset($_SESSION['error']); ?>
-    <?php endif; ?>
-    <?php if (isset($_SESSION['success'])): ?>
-        <div class="alert alert-success"><?= $_SESSION['success'] ?></div>
-        <?php unset($_SESSION['success']); ?>
-    <?php endif; ?>
-    <a href="index.php" class="btn btn-secondary mb-3">← กลับหน้าผู้ดูแล</a>
-    <form method="post" class="row g-3 mb-4">
-        <div class="col-md-6">
-            <input type="text" name="category_name" class="form-control" placeholder="ชื่อหมวดหมู่" required>
+    <div class="container mt-5">
+        <!-- Welcome Section -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card admin-card shadow-lg">
+                    <div class="card-body">
+                        <h1 class="display-5 text-primary mb-3">
+                            <i class="bi bi-tags"></i> จัดการหมวดหมู่
+                        </h1>
+                        <p class="lead text-muted">
+                            จัดการหมวดหมู่สินค้าในระบบ - <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>
+                        </p>
+                        <div class="badge bg-info fs-6">
+                            <i class="bi bi-collection"></i> Category Management
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-2">
-            <button type="submit" name="add_category" class="btn btn-primary">เพิ่มหมวดหมู่</button>
-        </div>
-    </form>
-    <h5>รายการหมวดหมู่</h5>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ชื่อหมวดหมู่</th>
-                <th>แก้ไขชื่อ</th>
-                <th>จัดการ</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($categories as $cat): ?>
-                <tr>
-                    <td><?= htmlspecialchars($cat['category_name']) ?></td>
-                    <td>
-                        <form method="post" class="d-flex">
-                            <input type="hidden" name="category_id" value="<?= $cat['category_id'] ?>">
-                            <input type="text" name="new_name" class="form-control me-2" placeholder="ชื่อใหม่"
-                                required>
-                            <button type="submit" name="update_category" class="btn btn-sm btn-warning">แก้ไข
-                            </button>
+
+        <!-- Alert Messages -->
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> <?= $_SESSION['error'] ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> <?= $_SESSION['success'] ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <?php unset($_SESSION['success']); ?>
+        <?php endif; ?>
+
+        <!-- Add Category Form -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card admin-card shadow-lg">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-plus-circle"></i> เพิ่มหมวดหมู่ใหม่
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" class="row g-3">
+                            <div class="col-md-8">
+                                <label for="category_name" class="form-label">ชื่อหมวดหมู่</label>
+                                <input type="text" name="category_name" id="category_name" class="form-control" placeholder="ชื่อหมวดหมู่" required>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" name="add_category" class="btn btn-info btn-md w-100">
+                                    <i class="bi bi-plus-circle"></i> เพิ่มหมวดหมู่
+                                </button>
+                            </div>
                         </form>
-                    </td>
-                    <td>
-                        <a href="category.php?delete=<?= $cat['category_id'] ?>" class="btn btn-sm btn-danger"
-                            onclick="return confirm('คุณต้องการลบหมวดหมู่นี้หรือไม่?')">ลบ</a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Categories Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card admin-card shadow-lg">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-list-ul"></i> รายการหมวดหมู่ทั้งหมด
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="py-3">
+                                            <i class="bi bi-hash"></i> ID
+                                        </th>
+                                        <th class="py-3">
+                                            <i class="bi bi-tag"></i> ชื่อหมวดหมู่
+                                        </th>
+                                        <th class="py-3">
+                                            <i class="bi bi-pencil"></i> แก้ไขชื่อ
+                                        </th>
+                                        <th class="py-3 text-center">
+                                            <i class="bi bi-gear"></i> จัดการ
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($categories as $cat): ?>
+                                        <tr>
+                                            <td class="py-3">
+                                                <span class="badge bg-secondary fs-6"><?= $cat['category_id'] ?></span>
+                                            </td>
+                                            <td class="py-3">
+                                                <div>
+                                                    <h6 class="mb-0"><?= htmlspecialchars($cat['category_name']) ?></h6>
+                                                    <small class="text-muted">หมวดหมู่ #<?= $cat['category_id'] ?></small>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 ">
+                                                <form method="post" class="d-flex">
+                                                    <input type="hidden" name="category_id" value="<?= $cat['category_id'] ?>">
+                                                    <input type="text" name="new_name" class="form-control form-control-sm me-2" 
+                                                           placeholder="ชื่อใหม่" required style="max-width: 400px;">
+                                                    <button type="submit" name="update_category" class="btn btn-outline-warning btn-sm">
+                                                        <i class="bi bi-check"></i> แก้ไข
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <td class="py-3 text-center">
+                                                <a href="category.php?delete=<?= $cat['category_id'] ?>" 
+                                                   class="btn btn-outline-danger btn-sm"
+                                                   onclick="return confirm('คุณต้องการลบหมวดหมู่นี้หรือไม่?')">
+                                                    <i class="bi bi-trash"></i> ลบ
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
