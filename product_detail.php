@@ -96,7 +96,22 @@ $isLoggedIn = isset($_SESSION['user_id']);
                             <i class="bi bi-box-seam"></i> รายละเอียดสินค้า
                         </h3>
                     </div>
-                    <div class="card-body p-4">
+                    <div>
+                        <?php if (!empty($product['image'])): ?>
+                            <?php
+                            $img = !empty($product['image'])
+                                ? 'product_images/' . rawurlencode($product['image'])
+                                : 'product_images/no-image.jpg';
+                            ?>
+                            <img src="<?= $img ?>" class="card-img-top" alt="<?= htmlspecialchars($product['product_name']) ?>" style="object-fit: cover; height: 400px; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                        <?php else: ?>
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 400px; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                                <span class="text-muted fs-4">ไม่มีรูปภาพ</span>
+
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class=" card-body p-4">
                         <!-- Product Name -->
                         <div class="text-center mb-4">
                             <h1 class="display-6 text-primary">
