@@ -28,29 +28,85 @@ $isLoggedIn = isset($_SESSION['user_id']);
             background: white;
             min-height: 100vh;
         }
+
         .card {
             transition: transform 0.3s, box-shadow 0.3s;
             border: none;
             border-radius: 15px;
         }
+
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
+
         .navbar-brand {
             font-weight: bold;
         }
+
         .hero-section {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
             backdrop-filter: blur(10px);
         }
+
         .product-card {
             height: 100%;
         }
+
         .price-tag {
             font-size: 1.2rem;
             font-weight: bold;
+        }
+
+        .product-card {
+            border: 1;
+            background: #fff;
+        }
+
+        .product-thumb {
+            height: 180px;
+            object-fit: cover;
+            border-radius: .5rem;
+        }
+
+        .product-meta {
+            font-size: .75rem;
+            letter-spacing: .05em;
+            color: #8a8f98;
+            text-transform: uppercase;
+        }
+
+        .product-title {
+            font-size: 1rem;
+            margin: .25rem 0 .5rem;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .price {
+            font-weight: 700;
+        }
+
+        .rating i {
+            color: #ffc107;
+        }
+
+        /* ดำวสที อง */
+        .wishlist {
+            color: #b9bfc6;
+        }
+
+        .wishlist:hover {
+            color: #ff5b5b;
+        }
+
+        .badge-top-left {
+            position: absolute;
+            top: .5rem;
+            left: .5rem;
+            z-index: 2;
+            border-radius: .375rem;
         }
     </style>
 </head>
@@ -81,23 +137,29 @@ $isLoggedIn = isset($_SESSION['user_id']);
                             </a>
                             <ul class="dropdown-menu">
                                 <li><span class="dropdown-item-text">บทบาท: <?= htmlspecialchars($_SESSION['role']) ?></span></li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li><a class="dropdown-item" href="profile.php">
-                                    <i class="bi bi-person"></i> ข้อมูลส่วนตัว
-                                </a></li>
+                                        <i class="bi bi-person"></i> ข้อมูลส่วนตัว
+                                    </a></li>
                                 <li><a class="dropdown-item" href="cart.php">
-                                    <i class="bi bi-cart"></i> ตะกร้าสินค้า
-                                </a></li>
-                                <?php if($_SESSION['role'] === 'admin'): ?>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="admin/index.php">
-                                    <i class="bi bi-gear"></i> จัดการระบบ
-                                </a></li>
+                                        <i class="bi bi-cart"></i> ตะกร้าสินค้า
+                                    </a></li>
+                                <?php if ($_SESSION['role'] === 'admin'): ?>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="admin/index.php">
+                                            <i class="bi bi-gear"></i> จัดการระบบ
+                                        </a></li>
                                 <?php endif; ?>
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li><a class="dropdown-item text-danger" href="logout.php">
-                                    <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
-                                </a></li>
+                                        <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
+                                    </a></li>
                             </ul>
                         </li>
                     <?php else: ?>
@@ -124,7 +186,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
                         </h1>
                         <?php if ($isLoggedIn): ?>
                             <p class="lead text-muted">
-                                สวัสดี <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>! 
+                                สวัสดี <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>!
                                 เลือกสินค้าที่คุณต้องการได้เลย
                             </p>
                         <?php else: ?>
@@ -146,89 +208,84 @@ $isLoggedIn = isset($_SESSION['user_id']);
         </div>
 
         <!-- Products Section -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <h2 class="text-white text-center mb-4">
-                    <i class="bi bi-bag-fill"></i> รายการสินค้า
-                </h2>
-            </div>
-        </div>
-
-        <!-- Products Grid -->
-        <?php if (empty($products)): ?>
-            <div class="row">
-                <div class="col-12">
-                    <div class="card shadow">
-                        <div class="card-body text-center py-5">
-                            <i class="bi bi-inbox display-1 text-muted"></i>
-                            <h3 class="text-muted mt-3">ยังไม่มีสินค้าในระบบ</h3>
-                            <p class="text-muted">กรุณารอสินค้าใหม่ หรือติดต่อผู้ดูแลระบบ</p>
+        <!-- ===== สว่ นแสดงสนิ คำ้ ===== -->
+        <div class="row g-4"> <!-- EDIT C -->
+            <?php foreach ($products as $p): ?>
+                <!-- TODO==== เตรียมรูป / ตกแต่ง badge / ดำวรีวิว ==== -->
+                <?php
+                // เตรียมรูป
+                $img = !empty($p['image'])
+                    ? 'product_images/' . rawurlencode($p['image'])
+                    : 'product_images/no-image.jpg';
+                // ตกแต่ง badge: NEW ภำยใน 7 วัน / HOT ถ ้ำสต็อกน้อยกว่ำ 5
+                $isNew = isset($p['created_at']) && (time() - strtotime($p['created_at']) <= 7 * 24 * 3600);
+                $isHot = (int)$p['stock'] > 0 && (int)$p['stock'] < 5;
+                // ดำวรีวิว (ถ ้ำไม่มีใน DB จะโชว์ 4.5 จ ำลอง; ถ ้ำมี $p['rating'] ให้แทน)
+                $rating = isset($p['rating']) ? (float)$p['rating'] : 4.5;
+                $full = floor($rating); // จ ำนวนดำวเต็ม (เต็ม 1 ดวง) , floor ปัดลง
+                $half = ($rating - $full) >= 0.5 ? 1 : 0; // มีดำวครึ่งดวงหรือไม่
+                ?>
+                <div class="col-12 col-sm-6 col-lg-3"> <!-- EDIT C -->
+                    <div class="card product-card h-100 position-relative"> <!-- EDIT C -->
+                        <!-- TODO====check $isNew / $isHot ==== -->
+                        <?php if ($isNew): ?>
+                            <span class="badge bg-success badge-top-left">NEW</span>
+                        <?php elseif ($isHot): ?>
+                            <span class="badge bg-danger badge-top-left">HOT</span>
+                        <?php endif; ?>
+                        <!-- TODO====show Product images ==== -->
+                        <a href="product_detail.php?id=<?= (int)$p['product_id'] ?>" class="p-3 d-block">
+                            <img src="<?= htmlspecialchars($img) ?>"
+                                alt="<?= htmlspecialchars($p['product_name']) ?>"
+                                class="img-fluid w-100 product-thumb">
+                        </a>
+                        <div class="px-3 pb-3 d-flex flex-column"> <!-- EDIT C -->
+                            <!-- TODO====div for category, heart ==== -->
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div class="product-meta">
+                                    <?= htmlspecialchars($p['category_name'] ?? 'Category') ?>
+                                </div>
+                                <button class="btn btn-link p-0 wishlist" title="Add to wishlist" type="button">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            </div>
+                            <!-- TODO====link, div for product name ==== -->
+                            <a class="text-decoration-none" href="product_detail.php?id=<?= (int)$p['product_id'] ?>">
+                                <div class="product-title">
+                                    <?= htmlspecialchars($p['product_name']) ?>
+                                </div>
+                            </a>
+                            <!-- TODO====div for rating ==== -->
+                            <!-- ดำวรีวิว -->
+                            <div class="rating mb-2">
+                                <?php for ($i = 0; $i < $full; $i++): ?><i class="bi bi-star-fill"></i><?php endfor; ?>
+                                <?php if ($half): ?><i class="bi bi-star-half"></i><?php endif; ?>
+                                <?php for ($i = 0; $i < 5 - $full - $half; $i++): ?><i class="bi bi-star"></i><?php endfor; ?>
+                            </div>
+                            <!-- TODO====div for price ==== -->
+                            <div class="price mb-3">
+                                <?= number_format((float)$p['price'], 2) ?> บำท
+                            </div>
+                            <!-- TODO====div for button check login ==== -->
+                            <div class="mt-auto d-flex gap-2">
+                                <?php if ($isLoggedIn): ?>
+                                    <form action="cart.php" method="post" class="d-inline-flex gap-2">
+                                        <input type="hidden" name="product_id" value="<?= (int)$p['product_id'] ?>">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-sm btn-success">เพิ่มในตะกร ้ำ</button>
+                                    </form>
+                                <?php else: ?>
+                                    <small class="text-muted">เขำ้สรู่ ะบบเพอื่ สั่งซอื้ </small>
+                                <?php endif; ?>
+                                <a href="product_detail.php?id=<?= (int)$p['product_id'] ?>"
+                                    class="btn btn-sm btn-outline-primary ms-auto">ดูรำยละเอียด</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        <?php else: ?>
-            <div class="row g-4">
-                <?php foreach ($products as $p): ?>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card product-card shadow">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-box-seam"></i> <?= htmlspecialchars($p['product_name']) ?>
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-2">
-                                    <span class="badge bg-secondary">
-                                        <i class="bi bi-tag"></i> <?= htmlspecialchars($p['category_name'] ?? 'ไม่มีหมวดหมู่') ?>
-                                    </span>
-                                </div>
-                                <p class="card-text text-muted">
-                                    <?= nl2br(htmlspecialchars(substr($p['description'], 0, 100))) ?>
-                                    <?= strlen($p['description']) > 100 ? '...' : '' ?>
-                                </p>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div class="price-tag text-success">
-                                        <i class="bi bi-currency-dollar"></i> <?= number_format($p['price'], 2) ?> บาท
-                                    </div>
-                                    <small class="text-muted">
-                                        <i class="bi bi-boxes"></i> คงเหลือ <?= $p['stock'] ?> ชิ้น
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <div class="d-flex gap-2">
-                                    <?php if ($isLoggedIn): ?>
-                                        <?php if ($p['stock'] > 0): ?>
-                                            <form action="cart.php" method="post" class="flex-grow-1">
-                                                <input type="hidden" name="product_id" value="<?= $p['product_id'] ?>">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn btn-success w-100">
-                                                    <i class="bi bi-cart-plus"></i> เพิ่มในตะกร้า
-                                                </button>
-                                            </form>
-                                        <?php else: ?>
-                                            <button class="btn btn-secondary w-100 flex-grow-1" disabled>
-                                                <i class="bi bi-x-circle"></i> สินค้าหมด
-                                            </button>
-                                        <?php endif; ?>
-                                    <?php else: ?>
-                                        <div class="flex-grow-1">
-                                            <small class="text-muted d-block text-center">เข้าสู่ระบบเพื่อสั่งซื้อ</small>
-                                        </div>
-                                    <?php endif; ?>
-                                    <a href="product_detail.php?id=<?= $p['product_id'] ?>" class="btn btn-outline-primary">
-                                        <i class="bi bi-eye"></i> ดูรายละเอียด
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
     </div>
-
     <!-- Footer -->
     <footer class="bg-dark text-white py-4 mt-5">
         <div class="container text-center">
