@@ -30,20 +30,144 @@ $isLoggedIn = isset($_SESSION['user_id']);
         body {
             background: white;
             min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .product-card {
-            border-radius: 15px;
+        .navbar {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #ffc107 !important;
+            transform: translateY(-2px);
+        }
+
+        .dropdown-menu {
             border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            min-width: 200px;
+            padding: 0.5rem 0;
+            z-index: 9999;
+            position: absolute;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background-color: #f8f9fa;
+            color: #dc3545 !important;
+        }
+
+        .dropdown-item-text {
+            padding: 0.5rem 1rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .admin-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            transition: all 0.3s ease;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-icon {
+            font-size: 3rem;
+            margin: 1rem 0;
+        }
+
+        .card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 15px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .display-6 {
+            font-weight: 700;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .lead {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge {
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
         }
 
         .price-badge {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
+            color: #007bff;
         }
 
         .quantity-input {
             max-width: 120px;
+            border-radius: 10px;
+        }
+
+        .breadcrumb {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .admin-card {
+                margin-bottom: 1rem;
+            }
+            
+            .display-6 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -53,14 +177,61 @@ $isLoggedIn = isset($_SESSION['user_id']);
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
         <div class="container">
             <a class="navbar-brand" href="index.php">
-                <i class="bi bi-shop"></i> ร้านค้าออนไลน์
+                <i class="bi bi-shop"></i> Bobo Eletronics
             </a>
-            <div class="navbar-nav ms-auto">
-                <?php if ($isLoggedIn): ?>
-                    <span class="navbar-text text-white">
-                        <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['username']) ?>
-                    </span>
-                <?php endif; ?>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">
+                            <i class="bi bi-house"></i> หน้าหลัก
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <?php if ($isLoggedIn): ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['username']) ?>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><span class="dropdown-item-text">บทบาท: <?= htmlspecialchars($_SESSION['role']) ?></span></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="profile.php">
+                                        <i class="bi bi-person"></i> ข้อมูลส่วนตัว
+                                    </a></li>
+                                <li><a class="dropdown-item" href="cart.php">
+                                        <i class="bi bi-cart"></i> ตะกร้าสินค้า
+                                    </a></li>
+                                <?php if ($_SESSION['role'] === 'admin'): ?>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="admin/index.php">
+                                            <i class="bi bi-gear"></i> จัดการระบบ
+                                        </a></li>
+                                <?php endif; ?>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item text-danger" href="logout.php">
+                                        <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
+                                    </a></li>
+                            </ul>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item">
+                            <a href="login.php" class="btn btn-success me-2">เข้าสู่ระบบ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="register.php" class="btn btn-primary">สมัครสมาชิก</a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
             </div>
         </div>
     </nav>
@@ -97,19 +268,12 @@ $isLoggedIn = isset($_SESSION['user_id']);
                         </h3>
                     </div>
                     <div>
-                        <?php if (!empty($product['image'])): ?>
-                            <?php
-                            $img = !empty($product['image'])
-                                ? 'product_images/' . rawurlencode($product['image'])
-                                : 'product_images/no-image.jpg';
-                            ?>
-                            <img src="<?= $img ?>" class="card-img-top" alt="<?= htmlspecialchars($product['product_name']) ?>" style="object-fit: cover; height: 400px; border-top-left-radius: 15px; border-top-right-radius: 15px;">
-                        <?php else: ?>
-                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 400px; border-top-left-radius: 15px; border-top-right-radius: 15px;">
-                                <span class="text-muted fs-4">ไม่มีรูปภาพ</span>
-
-                            </div>
-                        <?php endif; ?>
+                        <?php
+                        $img = !empty($product['image'])
+                            ? 'product_images/' . rawurlencode($product['image'])
+                            : 'product_images/no-image.jpg';
+                        ?>
+                        <img src="<?= $img ?>" class="card-img-top p-3" alt="<?= htmlspecialchars($product['product_name']) ?>" style="object-fit: contain; height: 400px; border-top-left-radius: 15px; border-top-right-radius: 15px;">
                     </div>
                     <div class=" card-body p-4">
                         <!-- Product Name -->
@@ -233,7 +397,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
     <!-- Footer -->
     <footer class="bg-dark text-white py-4 mt-5">
         <div class="container text-center">
-            <p class="mb-0">&copy; Adisak Yongpanya 664230034 66/46</p>
+            <p class="mb-0">&copy;2025 Bobo Eletronics.</p>
         </div>
     </footer>
 

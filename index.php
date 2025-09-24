@@ -27,74 +27,190 @@ $isLoggedIn = isset($_SESSION['user_id']);
         body {
             background: white;
             min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #ffc107 !important;
+            transform: translateY(-2px);
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            min-width: 200px;
+            padding: 0.5rem 0;
+            z-index: 9999;
+            position: absolute;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background-color: #f8f9fa;
+            color: #dc3545 !important;
+        }
+
+        .dropdown-item-text {
+            padding: 0.5rem 1rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+        }
+
+        .navbar {
+            z-index: 1030;
+            position: relative;
+        }
+
+        .admin-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            transition: all 0.3s ease;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-icon {
+            font-size: 3rem;
+            margin: 1rem 0;
         }
 
         .card {
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.3s ease;
             border: none;
             border-radius: 15px;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .display-4 {
+            font-weight: 700;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .lead {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge {
+            border-radius: 10px;
+            font-weight: 500;
         }
 
         .navbar-brand {
             font-weight: bold;
+            color: white !important;
         }
 
         .hero-section {
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
+            border-radius: 20px;
             backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .product-card {
             height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         .price-tag {
             font-size: 1.2rem;
             font-weight: bold;
-        }
-
-        .product-card {
-            border: 1;
-            background: #fff;
+            color: #007bff;
         }
 
         .product-thumb {
-            height: 180px;
+            height: 200px;
             object-fit: cover;
-            border-radius: .5rem;
+            border-radius: 10px;
         }
 
         .product-meta {
-            font-size: .75rem;
+            font-size: .8rem;
             letter-spacing: .05em;
-            color: #8a8f98;
+            color: #007bff;
             text-transform: uppercase;
+            font-weight: 600;
         }
 
         .product-title {
-            font-size: 1rem;
+            font-size: 1.1rem;
             margin: .25rem 0 .5rem;
-            font-weight: 600;
-            color: #222;
+            font-weight: 700;
+            color: #333;
         }
 
         .price {
             font-weight: 700;
+            font-size: 1.2rem;
+            color: #007bff;
         }
 
         .rating i {
             color: #ffc107;
         }
 
-        /* ดำวสที อง */
+        /* ปุ่มหัวใจ */
         .wishlist {
             color: #b9bfc6;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .wishlist:hover {
@@ -103,10 +219,33 @@ $isLoggedIn = isset($_SESSION['user_id']);
 
         .badge-top-left {
             position: absolute;
-            top: .5rem;
-            left: .5rem;
+            top: .8rem;
+            left: .8rem;
             z-index: 2;
-            border-radius: .375rem;
+            border-radius: 10px;
+            padding: 0.4rem 0.6rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            border-radius: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .admin-card {
+                margin-bottom: 1rem;
+            }
+            
+            .display-4 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -116,7 +255,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
         <div class="container">
             <a class="navbar-brand" href="index.php">
-                <i class="bi bi-shop"></i> ร้านค้าออนไลน์
+                <i class="bi bi-shop"></i> Bobo Eletronics
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -175,25 +314,33 @@ $isLoggedIn = isset($_SESSION['user_id']);
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container mt-5">
         <!-- Hero Section -->
-        <div class="row mb-4">
+        <div class="row mb-5">
             <div class="col-12">
-                <div class="card hero-section shadow">
-                    <div class="card-body text-center py-4">
-                        <h1 class="display-5 text-primary mb-3">
-                            <i class="bi bi-shop-window"></i> ยินดีต้อนรับสู่ร้านค้าออนไลน์
+                <div class="card admin-card shadow-lg">
+                    <div class="card-body text-center">
+                        <div class="admin-icon text-primary">
+                            <i class="bi bi-shop-window"></i>
+                        </div>
+                        <h1 class="display-4 text-primary mb-3">ยินดีต้อนรับสู่ Bobo Eletronics</h1>
                         </h1>
                         <?php if ($isLoggedIn): ?>
                             <p class="lead text-muted">
-                                สวัสดี <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>!
+                                สวัสดี <strong class="text-primary"><?= htmlspecialchars($_SESSION['username']) ?></strong>!
                                 เลือกสินค้าที่คุณต้องการได้เลย
                             </p>
+                            <div class="badge bg-success fs-6">
+                                <i class="bi bi-check-circle"></i> เข้าสู่ระบบแล้ว
+                            </div>
                         <?php else: ?>
-                            <p class="lead text-muted mb-4">
+                            <p class="lead text-muted">
                                 สินค้าคุณภาพดี ราคาถูก จัดส่งรวดเร็ว
                             </p>
-                            <div class="d-flex gap-2 justify-content-center">
+                            <div class="badge bg-info fs-6 mb-3">
+                                <i class="bi bi-shop"></i> Online Shop System
+                            </div>
+                            <div class="d-flex gap-3 justify-content-center">
                                 <a href="login.php" class="btn btn-success">
                                     <i class="bi bi-box-arrow-in-right"></i> เข้าสู่ระบบ
                                 </a>
@@ -225,8 +372,8 @@ $isLoggedIn = isset($_SESSION['user_id']);
                 $full = floor($rating); // จ ำนวนดำวเต็ม (เต็ม 1 ดวง) , floor ปัดลง
                 $half = ($rating - $full) >= 0.5 ? 1 : 0; // มีดำวครึ่งดวงหรือไม่
                 ?>
-                <div class="col-12 col-sm-6 col-lg-3"> <!-- EDIT C -->
-                    <div class="card product-card h-100 position-relative"> <!-- EDIT C -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card admin-card h-100 position-relative">
                         <!-- TODO====check $isNew / $isHot ==== -->
                         <?php if ($isNew): ?>
                             <span class="badge bg-success badge-top-left">NEW</span>
@@ -264,7 +411,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
                             </div>
                             <!-- TODO====div for price ==== -->
                             <div class="price mb-3">
-                                <?= number_format((float)$p['price'], 2) ?> บำท
+                                <?= number_format((float)$p['price'], 2) ?> บาท
                             </div>
                             <!-- TODO====div for button check login ==== -->
                             <div class="mt-auto d-flex gap-2">
@@ -272,13 +419,13 @@ $isLoggedIn = isset($_SESSION['user_id']);
                                     <form action="cart.php" method="post" class="d-inline-flex gap-2">
                                         <input type="hidden" name="product_id" value="<?= (int)$p['product_id'] ?>">
                                         <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-sm btn-success">เพิ่มในตะกร ้ำ</button>
+                                        <button type="submit" class="btn btn-sm btn-success">เพิ่มในตะกร้า</button>
                                     </form>
                                 <?php else: ?>
-                                    <small class="text-muted">เขำ้สรู่ ะบบเพอื่ สั่งซอื้ </small>
+                                    <small class="text-muted">เข้าสู่ระบบเพื่อ สั่งซื้อ </small>
                                 <?php endif; ?>
                                 <a href="product_detail.php?id=<?= (int)$p['product_id'] ?>"
-                                    class="btn btn-sm btn-outline-primary ms-auto">ดูรำยละเอียด</a>
+                                    class="btn btn-sm btn-outline-primary ms-auto">ดูรายละเอียด</a>
                             </div>
                         </div>
                     </div>
@@ -286,12 +433,9 @@ $isLoggedIn = isset($_SESSION['user_id']);
             <?php endforeach; ?>
         </div>
     </div>
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
-        <div class="container text-center">
-            <p class="mb-0">&copy; Adisak Yongpanya 664230034 66/46</p>
-        </div>
-    </footer>
+    <!-- Footer Section -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        &copy; <?= date('Y') ?> Bobo Eletronics.
 
 
 
