@@ -185,62 +185,82 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
         <!-- Add Product Form -->
         <div class="row mb-5">
             <div class="col-12">
-                <div class="card admin-card shadow-lg">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">
-                            <i class="bi bi-plus-circle"></i> เพิ่มสินค้าใหม่
-                        </h5>
+            <div class="card admin-card shadow-lg">
+                <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> เพิ่มสินค้าใหม่
+                </h5>
+                </div>
+                <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="product_name" class="form-label">
+                        <i class="bi bi-box"></i> ชื่อสินค้า
+                        </label>
+                        <input type="text" name="product_name" id="product_name" class="form-control"
+                        placeholder="ชื่อสินค้า" required>
                     </div>
-                    <form method="post" enctype="multipart/form-data" class="row g-3 mb-4">
-
-                        <div class="card-body">
-                            <form method="post" class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="product_name" class="form-label">ชื่อสินค้า</label>
-                                    <input type="text" name="product_name" id="product_name" class="form-control"
-                                        placeholder="ชื่อสินค้า" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="price" class="form-label">ราคา</label>
-                                    <input type="number" step="0.01" name="price" id="price" class="form-control"
-                                        placeholder="0.00" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="stock" class="form-label">จำนวน</label>
-                                    <input type="number" name="stock" id="stock" class="form-control" placeholder="0"
-                                        required>
-                                </div>
-                                <div class="col-12">
-                                    <label for="category_id" class="form-label">หมวดหมู่</label>
-                                    <select name="category_id" id="category_id" class="form-select" required>
-                                        <option value="">เลือกหมวดหมู่</option>
-                                        <?php foreach ($categories as $cat): ?>
-                                            <option value="<?= $cat['category_id'] ?>">
-                                                <?= htmlspecialchars($cat['category_name']) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label for="description" class="form-label">รายละเอียดสินค้า</label>
-                                    <textarea name="description" id="description" class="form-control" rows="3"
-                                        placeholder="รายละเอียดสินค้า"></textarea>
-                                </div>
-                                <form method="post" enctype="multipart/form-data" class="row g-3 mb-4">
-                                    <div class="col-md-6">
-                                        <label class="form-label">รปู สนิ คำ้ (jpg, png)</label>
-                                        <input type="file" name="product_image" class="form-control">
-                                    </div>
-                                    <div class="col-12">
-                                        <button type="submit" name="add_product" class="btn btn-success btn-lg">
-                                            <i class="bi bi-plus-circle"></i> เพิ่มสินค้า
-                                        </button>
-                                    </div>
-                                </form>
+                    <div class="col-md-6">
+                        <label for="category_id" class="form-label">
+                        <i class="bi bi-tags"></i> หมวดหมู่
+                        </label>
+                        <select name="category_id" id="category_id" class="form-select" required>
+                        <option value="">เลือกหมวดหมู่</option>
+                        <?php foreach ($categories as $cat): ?>
+                            <option value="<?= $cat['category_id'] ?>">
+                            <?= htmlspecialchars($cat['category_name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="price" class="form-label">
+                        <i class="bi bi-currency-dollar"></i> ราคา (บาท)
+                        </label>
+                        <input type="number" step="0.01" name="price" id="price" class="form-control"
+                        placeholder="0.00" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="stock" class="form-label">
+                        <i class="bi bi-boxes"></i> จำนวนคงเหลือ
+                        </label>
+                        <input type="number" name="stock" id="stock" class="form-control" placeholder="0"
+                        required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="product_image" class="form-label">
+                        <i class="bi bi-image"></i> รูปสินค้า
+                        </label>
+                        <input type="file" name="product_image" id="product_image" class="form-control"
+                        accept="image/jpeg,image/png">
+                        <div class="form-text">รองรับไฟล์ JPG, PNG ขนาดไม่เกิน 5MB</div>
+                    </div>
+                    <div class="col-12">
+                        <label for="description" class="form-label">
+                        <i class="bi bi-file-earmark-text"></i> รายละเอียดสินค้า
+                        </label>
+                        <textarea name="description" id="description" class="form-control" rows="3"
+                        placeholder="รายละเอียดและคำอธิบายสินค้า..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <hr class="my-4">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="reset" class="btn btn-outline-secondary me-md-2">
+                            <i class="bi bi-arrow-clockwise"></i> รีเซ็ต
+                        </button>
+                        <button type="submit" name="add_product" class="btn btn-success btn-lg">
+                            <i class="bi bi-plus-circle"></i> เพิ่มสินค้า
+                        </button>
                         </div>
+                    </div>
+                    </div>
+                </form>
                 </div>
             </div>
+            </div>
         </div>
+        
         <!-- Products Table Section -->
         <div class="row">
             <div class="col-12">
