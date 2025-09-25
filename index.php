@@ -285,6 +285,9 @@ $isLoggedIn = isset($_SESSION['user_id']);
                                 <li><a class="dropdown-item" href="cart.php">
                                         <i class="bi bi-cart"></i> ตะกร้าสินค้า
                                     </a></li>
+                                <li><a class="dropdown-item" href="orders.php">
+                                        <i class="bi bi-bag"></i> ประวัติการสั่งซื้อ
+                                    </a></li>
                                 <?php if ($_SESSION['role'] === 'admin'): ?>
                                     <li>
                                         <hr class="dropdown-divider">
