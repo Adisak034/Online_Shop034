@@ -2,6 +2,22 @@
 
 require_once '../config.php';
 require_once 'auth_admin.php';
+require_once '../session_timeout.php';
+
+// ดึงข้อมูลสถิติ
+$total_products = $conn->query("SELECT COUNT(*) FROM products")->fetchColumn();
+$total_orders = $conn->query("SELECT COUNT(*) FROM orders")->fetchColumn();
+$total_users = $conn->query("SELECT COUNT(*) FROM users WHERE role = 'member'")->fetchColumn();
+$total_sales = $conn->query("SELECT SUM(total_amount) FROM orders WHERE status = 'completed'")->fetchColumn();
+$total_sales = $total_sales ?? 0; // กำหนดค่าเริ่มต้นเป็น 0 หากไม่มีข้อมูล
+
+// ตั้งค่า locale เป็นไทยเพื่อแสดงผลสกุลเงิน
+if (class_exists('NumberFormatter')) {
+    $formatter = new NumberFormatter('th_TH', NumberFormatter::CURRENCY);
+    $formatted_sales = $formatter->formatCurrency($total_sales ?? 0, 'THB');
+} else {
+    $formatted_sales = number_format($total_sales, 2) . ' บาท';
+}
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -44,31 +60,7 @@ require_once 'auth_admin.php';
 
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="bi bi-shield-check"></i> ระบบผู้ดูแลระบบ
-            </a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['username']) ?>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><span class="dropdown-item-text">ผู้ดูแลระบบ</span></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="../index.php">
-                            <i class="bi bi-house"></i> กลับหน้าหลัก
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="../logout.php">
-                            <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
-                        </a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <?php require_once 'navbar_admin.php'; ?>
 
     <div class="container mt-5">
         <!-- Welcome Section -->
@@ -82,7 +74,6 @@ require_once 'auth_admin.php';
                         <p class="lead text-muted">
                             ยินดีต้อนรับเข้าสู่ระบบจัดการ, <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>
                         </p>
-                        <div class="badge bg-success fs-6">ผู้ดูแลระบบ</div>
                     </div>
                 </div>
             </div>
@@ -162,39 +153,47 @@ require_once 'auth_admin.php';
                     </div>
                     <div class="card-body">
                         <div class="row text-center">
-                            <div class="col-md-3">
-                                <div class="border-end">
-                                    <h3 class="text-primary">
-                                        <i class="bi bi-box"></i>
-                                    </h3>
-                                    <h4>จำนวนสินค้า</h4>
-                                    <p class="text-muted">ดูรายละเอียดเพิ่มเติม</p>
-                                </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="products.php" class="text-decoration-none text-dark">
+                                    <div class="border-end">
+                                        <h3 class="text-primary">
+                                            <i class="bi bi-box"></i> <?= $total_products ?>
+                                        </h3>
+                                        <h4>สินค้าทั้งหมด</h4>
+                                        <p class="text-muted">รายการ</p>
+                                    </div>
+                                </a>
                             </div>
-                            <div class="col-md-3">
-                                <div class="border-end">
-                                    <h3 class="text-success">
-                                        <i class="bi bi-cart3"></i>
-                                    </h3>
-                                    <h4>คำสั่งซื้อ</h4>
-                                    <p class="text-muted">ยอดขายทั้งหมด</p>
-                                </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="orders.php" class="text-decoration-none text-dark">
+                                    <div class="border-end">
+                                        <h3 class="text-success">
+                                            <i class="bi bi-cart3"></i> <?= $total_orders ?>
+                                        </h3>
+                                        <h4>คำสั่งซื้อ</h4>
+                                        <p class="text-muted">ออร์เดอร์</p>
+                                    </div>
+                                </a>
                             </div>
-                            <div class="col-md-3">
-                                <div class="border-end">
-                                    <h3 class="text-warning">
-                                        <i class="bi bi-person-check"></i>
-                                    </h3>
-                                    <h4>สมาชิก</h4>
-                                    <p class="text-muted">ผู้ใช้ในระบบ</p>
-                                </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="users.php" class="text-decoration-none text-dark">
+                                    <div class="border-end">
+                                        <h3 class="text-warning">
+                                            <i class="bi bi-person-check"></i> <?= $total_users ?>
+                                        </h3>
+                                        <h4>สมาชิก</h4>
+                                        <p class="text-muted">คน</p>
+                                    </div>
+                                </a>
                             </div>
-                            <div class="col-md-3">
-                                <h3 class="text-info">
-                                    <i class="bi bi-award"></i>
-                                </h3>
-                                <h4>รายงาน</h4>
-                                <p class="text-muted">สรุปผลประกอบการ</p>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="orders.php" class="text-decoration-none text-dark">
+                                    <h3 class="text-info">
+                                        <i class="bi bi-cash-stack"></i>
+                                    </h3>
+                                    <h4>ยอดขายรวม</h4>
+                                    <p class="text-muted"><?= $formatted_sales ?></p>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -204,12 +203,7 @@ require_once 'auth_admin.php';
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
-        <div class="container text-center">
-            <p class="mb-0">&copy; Adisak Yongpanya 664230034 66/46</p>
-        </div>
-    </footer>
-
+    <?php require_once 'footer_admin.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous">
     </script>

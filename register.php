@@ -47,85 +47,97 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <title>สมัครสมาชิก - BoboIT Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        html,
         body {
-            background: white;
-            min-height: 100vh;
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+        }
+
+        .form-register {
+            max-width: 500px;
+            padding: 1rem;
+        }
+
+        .card {
+            border-radius: 1rem;
+            border: none;
+        }
+
+        .form-control {
+            border-radius: 0.75rem;
+            padding: 1rem;
+        }
+
+        .input-group-text {
+            border-top-left-radius: 0.75rem;
+            border-bottom-left-radius: 0.75rem;
         }
     </style>
 </head>
 
 <body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h2 class="mb-2 ">สมัครสมาชิก</h2>
-                        <?php if (!empty($error)): // ถ้ามีข้อผิดพลาด ให้แสดงข้อความ
-                        ?>
-                            <div class="alert alert-danger">
-                                <ul>
-                                    <?php foreach ($error as $e): ?>
-                                        <li style="list-style-type:none;"><?= htmlspecialchars($e) ?></li>
-                                        <!-- ใช้ htmlspecialchars เพื่อป้องกัน XSS -->
-                                        <!-- < ? = คือ short echo tag ?> -->
-                                        <!-- ถ้ำเขียนเต็ม จะได้แบบด้านล่าง -->
-                                        <?php // echo "<li>" . htmlspecialchars($e) . "</li>"; 
-                                        ?>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="card-body">
-                        <form action="" method="post">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="username" class="form-label">ชื่อผู้ใช้</label>
-                                    <input type="text" id="username" name="username" class="form-control"
-                                        placeholder="ชื่อผู้ใช้" require value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : '' ?>">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="fullname" class="form-label">ชื่อ-สกุล</label>
-                                    <input type="text" id="fullname" name="fullname" class="form-control"
-                                        placeholder="ชื่อ-สกุล" require value="<?= isset($_POST['fullname']) ? htmlspecialchars($_POST['fullname']) : '' ?>">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" id="email" name="email" class="form-control"
-                                        placeholder="Email" require value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="password" class="form-label">รหัสผ่าน</label>
-                                    <input type="password" id="password" name="password" class="form-control"
-                                        placeholder="รหัสผ่าน" require>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="confirm_password" class="form-label">ยืนยันรหัสผ่าน</label>
-                                    <input type="password" id="confirm_password" name="confirm_password"
-                                        class="form-control" placeholder="ยืนยันรหัสผ่าน" require>
-                                </div>
-                            </div>
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-success btn-lg">สมัครสมาชิก</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="card-footer text-center">
-                        <small class="text-muted">มีบัญชีแล้ว? <a href="login.php"
-                                class="text-decoration-none">เข้าสู่ระบบ</a></small>
-                    </div>
+    <main class="form-register w-100 m-auto">
+        <div class="card shadow-lg">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <h1 class="h3 mb-3 fw-bold text-primary"><i class="bi bi-shop"></i> BoboIT Shop</h1>
+                    <h2 class="h4 mb-3 fw-normal">สร้างบัญชีใหม่</h2>
                 </div>
+
+                <?php if (!empty($error)) : ?>
+                    <div class="alert alert-danger">
+                        <?php foreach ($error as $e) : ?>
+                            <div><i class="bi bi-exclamation-triangle-fill"></i> <?= htmlspecialchars($e) ?></div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <form action="" method="post">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" name="username" class="form-control" placeholder="ชื่อผู้ใช้" required value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : '' ?>">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
+                        <input type="text" name="fullname" class="form-control" placeholder="ชื่อ-สกุล" required value="<?= isset($_POST['fullname']) ? htmlspecialchars($_POST['fullname']) : '' ?>">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" name="email" class="form-control" placeholder="อีเมล" required value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" name="password" class="form-control" placeholder="รหัสผ่าน" required>
+                    </div>
+
+                    <div class="input-group mb-4">
+                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                        <input type="password" name="confirm_password" class="form-control" placeholder="ยืนยันรหัสผ่าน" required>
+                    </div>
+
+                    <button class="w-100 btn btn-lg btn-primary" type="submit">สมัครสมาชิก</button>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <small class="text-muted">มีบัญชีอยู่แล้ว? <a href="login.php" class="text-decoration-none">เข้าสู่ระบบที่นี่</a></small>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
+    </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous">
     </script>

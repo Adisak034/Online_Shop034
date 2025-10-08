@@ -1,5 +1,6 @@
 <?php
 require_once '../config.php';
+require_once '../session_timeout.php';
 require_once 'auth_admin.php';
 //ตรวจสอบสิทธิ์admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -253,35 +254,25 @@ WHERE product_id = ?";
 
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">
-                <i class="bi bi-shield-check"></i> ระบบผู้ดูแลระบบ
-            </a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['username']) ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><span class="dropdown-item-text">ผู้ดูแลระบบ</span></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="../index.php">
-                            <i class="bi bi-house"></i> กลับหน้าหลัก
-                        </a></li>
-                        <li><a class="dropdown-item" href="index.php">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="../logout.php">
-                            <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
-                        </a></li>
-                    </ul>
+    <?php require_once 'navbar_admin.php'; ?>
+
+    <div class="container mt-5">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card admin-card shadow-lg">
+                    <div class="card-body text-center">
+                        <h1 class="display-5 text-primary mb-3">
+                            <i class="bi bi-pencil-square"></i> แก้ไขสินค้า
+                        </h1>
+                        <p class="lead text-muted">
+                            คุณกำลังแก้ไข: <strong><?= htmlspecialchars($product['product_name']) ?></strong>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-    </nav>
-
+    </div>
     <div class="container mt-5">
         <!-- Back Button -->
         <div class="row mb-4">
@@ -301,7 +292,7 @@ WHERE product_id = ?";
                             <i class="bi bi-pencil-square"></i> ฟอร์มแก้ไขสินค้า
                         </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                 <form method="post" enctype="multipart/form-data" class="row g-3">
                     <div class="col-md-6">
                         <label for="product_name" class="form-label">ชื่อสินค้า</label>
@@ -369,7 +360,7 @@ WHERE product_id = ?";
                         </div>
                         <div class="form-text text-muted">หากต้องการลบรูปเดิมทั้งหมด</div>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 text-center mt-4">
                         <button type="submit" class="btn btn-primary btn-lg">
                             <i class="bi bi-check-circle"></i> บันทึกการแก้ไข
                         </button>
@@ -381,6 +372,8 @@ WHERE product_id = ?";
             </div>
         </div>
     </div>
+
+    <?php require_once 'footer_admin.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>

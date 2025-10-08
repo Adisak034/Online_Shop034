@@ -1,5 +1,6 @@
 <?php
 require '../config.php'; // TODO-1: เชื่อมต่อฐานข้อมูลด้วย PDO
+require_once '../session_timeout.php';
 require 'auth_admin.php'; // TODO-2: การ์ดสิทธิ์(Admin Guard)
 
 // TODO-3: ตรวจว่ามีพารามิเตอร์ id มาจริงไหม (ผ่าน GET)
@@ -83,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $upd->execute($args);
         header("Location: users.php");
         exit;
-    }
+        }
     // เขียน update แบบปกติ: ถ้าไม่ซ้ำ -> ทำ UPDATE
     // if (!$error) {
     // $upd = $pdo->prepare("UPDATE users SET username = ?, full_name = ?, email = ? WHERE user_id = ?");
@@ -140,35 +141,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">
-                <i class="bi bi-shield-check"></i> ระบบผู้ดูแลระบบ
-            </a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['username']) ?>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><span class="dropdown-item-text">ผู้ดูแลระบบ</span></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="../index.php">
-                            <i class="bi bi-house"></i> กลับหน้าหลัก
-                        </a></li>
-                        <li><a class="dropdown-item" href="index.php">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="../logout.php">
-                            <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
-                        </a></li>
-                    </ul>
+    <?php require_once 'navbar_admin.php'; ?>
+
+    <div class="container mt-5">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card admin-card shadow-lg">
+                    <div class="card-body text-center">
+                        <h1 class="display-5 text-primary mb-3">
+                            <i class="bi bi-person-gear"></i> แก้ไขข้อมูลสมาชิก
+                        </h1>
+                        <p class="lead text-muted">
+                            คุณกำลังแก้ไขข้อมูลของ: <strong><?= htmlspecialchars($user['username']) ?></strong>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-    </nav>
-
+    </div>
     <div class="container mt-5">
 
         <!-- Back Button -->
@@ -193,40 +184,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="col-12">
                 <div class="card admin-card shadow-lg">
                     <div class="card-header bg-warning text-white">
-                        <h5 class="mb-0">
+                        <h5 class="mb-0 text-dark">
                             <i class="bi bi-pencil-square"></i> ฟอร์มแก้ไขข้อมูล
                         </h5>
                     </div>
-                    <div class="card-body">
-                        <form method="post" class="row g-3">
+                    <div class="card-body p-4">
+                        <form method="post" class="row g-4">
                             <div class="col-md-6">
-                                <label for="username" class="form-label">ชื่อผู้ใช้</label>
+                                <label for="username" class="form-label"><i class="bi bi-person"></i> ชื่อผู้ใช้</label>
                                 <input type="text" name="username" id="username" class="form-control" required 
                                        value="<?= htmlspecialchars($user['username']) ?>">
                             </div>
                             <div class="col-md-6">
-                                <label for="full_name" class="form-label">ชื่อ - นามสกุล</label>
+                                <label for="full_name" class="form-label"><i class="bi bi-person-vcard"></i> ชื่อ - นามสกุล</label>
                                 <input type="text" name="full_name" id="full_name" class="form-control" 
                                        value="<?= htmlspecialchars($user['full_name']) ?>">
                             </div>
                             <div class="col-12">
-                                <label for="email" class="form-label">อีเมล</label>
+                                <label for="email" class="form-label"><i class="bi bi-envelope"></i> อีเมล</label>
                                 <input type="email" name="email" id="email" class="form-control" required 
                                        value="<?= htmlspecialchars($user['email']) ?>">
                             </div>
                             <div class="col-md-6">
-                                <label for="password" class="form-label">รหัสผ่านใหม่</label>
+                                <label for="password" class="form-label"><i class="bi bi-key"></i> รหัสผ่านใหม่</label>
                                 <input type="password" name="password" id="password" class="form-control">
                                 <div class="form-text">
                                     <i class="bi bi-info-circle"></i> ถ้าไม่ต้องการเปลี่ยนรหัสผ่าน ให้เว้นว่างไว้
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="confirm_password" class="form-label">ยืนยันรหัสผ่านใหม่</label>
+                                <label for="confirm_password" class="form-label"><i class="bi bi-key-fill"></i> ยืนยันรหัสผ่านใหม่</label>
                                 <input type="password" name="confirm_password" id="confirm_password" class="form-control">
                             </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-warning btn-lg">
+                            <div class="col-12 text-center mt-4">
+                                <button type="submit" class="btn btn-warning btn-lg text-dark">
                                     <i class="bi bi-check-circle"></i> บันทึกการแก้ไข
                                 </button>
                                 <a href="users.php" class="btn btn-secondary btn-lg ms-2">
@@ -240,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-
+    <?php require_once 'footer_admin.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 

@@ -1,5 +1,6 @@
 <?php
 require_once '../config.php';
+require_once '../session_timeout.php';
 require_once 'auth_admin.php';
 // ตรวจสอบสิทธิ์admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -63,38 +64,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">
-                <i class="bi bi-shield-check"></i> ระบบผู้ดูแลระบบ
-            </a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['username']) ?>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><span class="dropdown-item-text">ผู้ดูแลระบบ</span></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="../index.php">
-                                <i class="bi bi-house"></i> กลับหน้าหลัก
-                            </a></li>
-                        <li><a class="dropdown-item" href="index.php">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item text-danger" href="../logout.php">
-                                <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
-                            </a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <?php require_once 'navbar_admin.php'; ?>
 
     <div class="container mt-5">
         <!-- Welcome Section -->
@@ -103,14 +73,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="card admin-card shadow-lg">
                     <div class="card-body">
                         <h1 class="display-5 text-primary mb-3">
-                            <i class="bi bi-box-seam"></i> จัดการสินค้า
+                            <i class="bi bi-people"></i> จัดการสมาชิก
                         </h1>
                         <p class="lead text-muted">
-                            จัดการข้อมูลสินค้าในระบบ - <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>
+                            จัดการข้อมูลผู้ใช้ในระบบ - <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>
                         </p>
-                        <div class="badge bg-success fs-6">
-                            <i class="bi bi-shop"></i> Product Management
-                        </div>
                     </div>
                 </div>
             </div>
@@ -219,13 +186,13 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                             title="แก้ไขข้อมูล">
                                                             <i class="bi bi-pencil"></i>
                                                         </a>
-                                                        <form action="delUser_Sweet.php" method="POST" style="display:inline;">
-                                                            <input type="hidden" name="u_id" value="<?= $user['user_id'] ?>">
-                                                            <button type="button" class="delete-button btn btn-outline-danger btn-sm" 
-                                                                    data-user-id="<?= $user['user_id'] ?>" title="ลบสมาชิก">
-                                                                <i class="bi bi-trash"></i>
-                                                            </button>
-                                                        </form>
+                                                                <form action="delUser_Sweet.php" method="POST" style="display:inline;">
+                                                                    <input type="hidden" name="u_id" value="<?= $user['user_id'] ?>">
+                                                                    <button type="button" class="delete-button btn btn-outline-danger btn-sm" 
+                                                                            data-user-id="<?= $user['user_id'] ?>" title="ลบสมาชิก">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </button>
+                                                                </form>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -247,12 +214,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- Footer -->
-    <!-- <footer class="bg-dark text-white py-4 mt-5">
-        <div class="container text-center">
-            <p class="mb-0">&copy; Adisak Yongpanya 664230034 66/46</p>
-        </div>
-    </footer> -->
-
+    <?php require_once 'footer_admin.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous">
     </script>

@@ -1,5 +1,6 @@
 <?php
 require '../config.php'; // TODO: เชื่อมต่อฐานข้อมูลด้วย pdo
+require_once '../session_timeout.php';
 require 'auth_admin.php'; // TODO: การ์ดสิทธิ์(Admin Guard)
 // แนวทาง: ถ้า !isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin' -> redirect ไป ../login.php แล้ว exit;
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -129,38 +130,7 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
 
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">
-                <i class="bi bi-shield-check"></i> ระบบผู้ดูแลระบบ
-            </a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['username']) ?>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><span class="dropdown-item-text">ผู้ดูแลระบบ</span></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="../index.php">
-                                <i class="bi bi-house"></i> กลับหน้าหลัก
-                            </a></li>
-                        <li><a class="dropdown-item" href="index.php">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item text-danger" href="../logout.php">
-                                <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
-                            </a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <?php require_once 'navbar_admin.php'; ?>
 
     <div class="container mt-5">
         <!-- Welcome Section -->
@@ -174,9 +144,6 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
                         <p class="lead text-muted">
                             จัดการข้อมูลสินค้าในระบบ - <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>
                         </p>
-                        <div class="badge bg-success fs-6">
-                            <i class="bi bi-shop"></i> Product Management
-                        </div>
                     </div>
                 </div>
             </div>
@@ -384,6 +351,8 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
         </div>
     </div>
     </div>
+
+    <?php require_once 'footer_admin.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous">

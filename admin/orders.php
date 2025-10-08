@@ -1,6 +1,7 @@
 
 <?php   
 require '../config.php';
+require_once '../session_timeout.php';
 require 'auth_admin.php';
 
 // ตรวจสอบสิทธิ์ admin
@@ -62,14 +63,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>จัดการคำสั่งซื้อ</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: white;
+            min-height: 100vh;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .admin-card {
+            border: none;
+            border-radius: 15px;
+        }
+        .admin-card .card-body {
+            padding: 2rem;
+        }
+        .accordion-button:not(.collapsed) {
+            color: #0d6efd;
+            background-color: #e7f1ff;
+        }
+    </style>
 </head>
-<body class="container mt-4">
+<body>
+    <?php require_once 'navbar_admin.php'; ?>
 
-<h2>คำสั่งซื้อทั้งหมด</h2>
-<a href="index.php" class="btn btn-secondary mb-3">← กลับหน้าผู้ดูแล</a>
+<div class="container mt-5">
+    <!-- Welcome Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card admin-card shadow-lg">
+                <div class="card-body text-center">
+                    <h1 class="display-5 text-primary mb-3">
+                        <i class="bi bi-cart-check"></i> จัดการคำสั่งซื้อ
+                    </h1>
+                    <p class="lead text-muted">
+                        ตรวจสอบและอัปเดตสถานะคำสั่งซื้อทั้งหมดในระบบ
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="accordion" id="ordersAccordion">
+<div class="container">
+    <div class="card admin-card shadow-lg">
+        <div class="card-body">
+            <div class="accordion" id="ordersAccordion">
 
 <?php foreach ($orders as $index => $order): ?>
 
@@ -78,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="accordion-item">
         <h2 class="accordion-header" id="heading<?= $index ?>">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?= $index ?>" aria-expanded="false" aria-controls="collapse<?= $index ?>">
-                คำสั่งซื้อ #<?= $order['order_id'] ?> | <?= htmlspecialchars($order['username']) ?> | <?= $order['order_date'] ?> | สถานะ: <span class="badge bg-info text-dark"><?= ucfirst($order['status']) ?></span>
+                คำสั่งซื้อ #<?= $order['order_id'] ?> | <?= htmlspecialchars($order['username'] ?? 'ผู้ใช้ถูกลบ') ?> | วันที่: <?= date('d/m/Y', strtotime($order['order_date'])) ?> | สถานะ: <span class="badge bg-info text-dark"><?= ucfirst($order['status']) ?></span>
             </button>
         </h2>
         <div id="collapse<?= $index ?>" class="accordion-collapse collapse" aria-labelledby="heading<?= $index ?>" data-bs-parent="#ordersAccordion">
@@ -144,7 +189,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 <?php endforeach; ?>
 </div>
+        </div>
+    </div>
+</div>
+</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Footer -->
+    <?php require_once 'footer_admin.php'; ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

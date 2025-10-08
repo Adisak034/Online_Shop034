@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'session_timeout.php';
 require 'config.php';
 // ตรวจสอบการล็อกอิน
 if (!isset($_SESSION['user_id'])) { // TODO: ใส่ session ของ user
@@ -9,7 +10,7 @@ if (!isset($_SESSION['user_id'])) { // TODO: ใส่ session ของ user
 $user_id = $_SESSION['user_id']; // TODO: กำหนด user_id
 
 // ดึงรายการสินค้าในตะกร้า
-$stmt = $conn->prepare("SELECT cart.cart_id, cart.quantity, cart.product_id, products.product_name, products.price
+$stmt = $conn->prepare("SELECT cart.cart_id, cart.quantity, cart.product_id, products.product_name, products.price, products.image
 FROM cart
 JOIN products ON cart.product_id = products.product_id
 WHERE cart.user_id = ?");
@@ -25,7 +26,7 @@ foreach ($items as $item) {
 }
 // เมื่อลูกค้ากดยืนยันคำสั่งซื้อ (method POST)
 
-$error = [];
+$errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $address = trim($_POST['address']); // TODO: ช่องกรอกที่อยู่
@@ -71,56 +72,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <head>
     <meta charset="UTF-8">
-    <title>สั่งซื้อสินค้า</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ชำระเงิน - BoboIT Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .order-summary-img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 
-<body class="container mt-4">
-    <h2>ยืนยันการสั่งซื้อสินค้า</h2>
-    <?php if (!empty($errors)): ?>
-        <div class="alert alert-danger">
-            <ul>
-                <?php foreach ($errors as $e): ?>
-                    <li><?= htmlspecialchars($e) ?></li>
-                <?php endforeach; ?>
-            </ul>
+<body>
+    <?php require_once 'navbar.php'; ?>
+
+    <div class="container mt-4">
+        <h2 class="mb-4"><i class="bi bi-wallet2"></i> ชำระเงิน</h2>
+
+        <div class="row g-5">
+            <!-- Shipping Form -->
+            <div class="col-md-7 col-lg-8">
+                <h4 class="mb-3">ข้อมูลการจัดส่ง</h4>
+                <?php if (!empty($errors)) : ?>
+                    <div class="alert alert-danger">
+                        <?php foreach ($errors as $e) : ?>
+                            <div><?= htmlspecialchars($e) ?></div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+                <form method="post" class="needs-validation" novalidate>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="address" class="form-label">ที่อยู่</label>
+                            <input type="text" name="address" id="address" class="form-control" placeholder="บ้านเลขที่, ถนน, ตำบล/แขวง" required>
+                            <div class="invalid-feedback">กรุณากรอกที่อยู่</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="city" class="form-label">จังหวัด</label>
+                            <input type="text" name="city" id="city" class="form-control" required>
+                            <div class="invalid-feedback">กรุณากรอกจังหวัด</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="postal_code" class="form-label">รหัสไปรษณีย์</label>
+                            <input type="text" name="postal_code" id="postal_code" class="form-control" required>
+                            <div class="invalid-feedback">กรุณากรอกรหัสไปรษณีย์</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="phone" class="form-label">เบอร์โทรศัพท์</label>
+                            <input type="tel" name="phone" id="phone" class="form-control" placeholder="08xxxxxxxx" required>
+                            <div class="invalid-feedback">กรุณากรอกเบอร์โทรศัพท์</div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between">
+                        <a href="cart.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> กลับไปที่ตะกร้า</a>
+                        <button class="btn btn-primary btn-lg" type="submit"><i class="bi bi-check-circle-fill"></i> ยืนยันการสั่งซื้อ</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-md-5 col-lg-4 order-md-last">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-primary">สรุปรายการ</span>
+                    <span class="badge bg-primary rounded-pill"><?= count($items) ?></span>
+                </h4>
+                <ul class="list-group mb-3">
+                    <?php foreach ($items as $item) : ?>
+                        <li class="list-group-item d-flex justify-content-between lh-sm">
+                            <div>
+                                <h6 class="my-0"><?= htmlspecialchars($item['product_name']) ?></h6>
+                                <small class="text-muted">จำนวน: <?= $item['quantity'] ?></small>
+                            </div>
+                            <span class="text-muted"><?= number_format($item['price'] * $item['quantity'], 2) ?></span>
+                        </li>
+                    <?php endforeach; ?>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>ยอดรวม (บาท)</span>
+                        <strong><?= number_format($total, 2) ?></strong>
+                    </li>
+                </ul>
+            </div>
         </div>
-    <?php endif; ?>
-    <!-- แสดงรายการสินค้าในตะกร้า -->
-    <h5>รายการสินค้าในตะกร้า</h5>
-    <ul class="list-group mb-4">
-        <?php foreach ($items as $item): ?>
-            <li class="list-group-item">
-                <?= htmlspecialchars($item['product_name']) ?> × <?= $item['quantity'] ?> = <?=
-                                                                                            number_format($item['price'] * $item['quantity'], 2) ?> บาท
-                <!-- TODO: product_name, quantity, price -->
-            </li>
-        <?php endforeach; ?>
-        <li class="list-group-item text-end"><strong>รวมทั้งหมด : <?= number_format($total, 2) ?> บาท</strong></li>
-    </ul>
-    <!-- ฟอรม์ กรอกขอ้ มลู กำรจัดสง่ -->
-    <form method="post" class="row g-3">
-        <div class="col-md-6">
-            <label for="address" class="form-label">ที่อยู่</label>
-            <input type="text" name="address" id="address" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-            <label for="city" class="form-label">จังหวัด</label>
-            <input type="text" name="city" id="city" class="form-control" required>
-        </div>
-        <div class="col-md-2">
-            <label for="postal_code" class="form-label">รหัสไปรษณีย์</label>
-            <input type="text" name="postal_code" id="postal_code" class="form-control" required>
-        </div>
-        <div class="col-md-6">
-            <label for="phone" class="form-label">เบอร์โทรศัพท์</label>
-            <input type="text" name="phone" id="phone" class="form-control">
-        </div>
-        <div class="col-12">
-            <button type="submit" class="btn btn-success">ยืนยันการสั่งซื้อ</button>
-            <a href="cart.php" class="btn btn-secondary">← กลับตะกร้า</a>
-        </div>
-    </form>
+    </div>
+
+    <?php require_once 'footer.php'; ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
