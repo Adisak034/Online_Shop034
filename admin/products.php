@@ -120,14 +120,20 @@ $final_query = $base_query;
 if (!empty($conditions)) {
     $final_query .= " WHERE " . implode(' AND ', $conditions);
 }
-$final_query .= " ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset";
+$final_query .= " ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
 
 $stmt = $conn->prepare($final_query);
-$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-foreach ($params as $key => $value) {
-    $stmt->bindValue($key + 1, $value);
+
+// Bind search/filter parameters first
+$param_index = 1;
+foreach ($params as $value) {
+    $stmt->bindValue($param_index++, $value);
 }
+
+// Explicitly bind LIMIT and OFFSET as integers
+$stmt->bindValue($param_index++, $limit, PDO::PARAM_INT);
+$stmt->bindValue($param_index++, $offset, PDO::PARAM_INT);
+
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

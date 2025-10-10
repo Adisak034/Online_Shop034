@@ -44,13 +44,16 @@ $total_users = $count_stmt->fetchColumn();
 $total_pages = ceil($total_users / $limit);
 
 // --- ดึงข้อมูลสมาชิกสำหรับหน้าปัจจุบัน ---
-$sql = "SELECT * " . $base_sql . $conditions_sql . " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+$sql = "SELECT * " . $base_sql . $conditions_sql . " ORDER BY created_at DESC LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($sql);
-foreach ($params as $key => $value) {
-    $stmt->bindValue($key + 1, $value);
+
+$param_index = 1;
+foreach ($params as $value) {
+    $stmt->bindValue($param_index++, $value);
 }
-$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+$stmt->bindValue($param_index++, $limit, PDO::PARAM_INT);
+$stmt->bindValue($param_index++, $offset, PDO::PARAM_INT);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
