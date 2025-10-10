@@ -76,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>ชำระเงิน - BoboIT Shop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
     <style>
         body {
             background-color: #f8f9fa;
@@ -122,13 +123,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <div class="col-md-6">
                             <label for="postal_code" class="form-label">รหัสไปรษณีย์</label>
-                            <input type="text" name="postal_code" id="postal_code" class="form-control" required>
+                            <input type="tel" name="postal_code" id="postal_code" class="form-control" required pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             <div class="invalid-feedback">กรุณากรอกรหัสไปรษณีย์</div>
                         </div>
 
                         <div class="col-12">
                             <label for="phone" class="form-label">เบอร์โทรศัพท์</label>
-                            <input type="tel" name="phone" id="phone" class="form-control" placeholder="08xxxxxxxx" required>
+                            <input type="tel" name="phone" id="phone" class="form-control" placeholder="08xxxxxxxx" required pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             <div class="invalid-feedback">กรุณากรอกเบอร์โทรศัพท์</div>
                         </div>
                     </div>

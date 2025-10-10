@@ -91,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     <title>โปรไฟล์ของฉัน - BoboIT Shop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
     <style>
         body {
             background-color: #f8f9fa;
@@ -102,10 +103,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
 
         .nav-pills .nav-link {
             border-radius: 10px;
+            color: #495057; /* สีเทาเข้มสำหรับสถานะปกติ */
         }
 
         .nav-pills .nav-link.active {
-            background-color: #007bff;
+            background-color: #fd7e14;
         }
 
         .list-group-item img {
@@ -115,6 +117,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
             border-radius: 8px;
+        }
+
+        .btn-outline-warning {
+            color: #fd7e14;
+            border-color: #fd7e14;
+        }
+
+        .btn-outline-warning:hover {
+            color: #fff;
+            background-color: #fd7e14;
+            border-color: #fd7e14;
         }
 
         .rating i {
@@ -185,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                                 <input type="password" name="confirm_password" id="confirm_password" class="form-control">
                             </div>
                             <div class="col-12">
-                                <button type="submit" name="update_profile" class="btn btn-primary">บันทึกการเปลี่ยนแปลง</button>
+                                <button type="submit" name="update_profile" class="btn btn-warning">บันทึกการเปลี่ยนแปลง</button>
                             </div>
                         </form>
                     </div>
@@ -206,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                                             </div>
                                         </div>
                                         <div>
-                                            <a href="product_detail.php?id=<?= $item['product_id'] ?>" class="btn btn-sm btn-outline-primary" title="ดูรายละเอียด"><i class="bi bi-eye"></i></a>
+                                            <a href="product_detail.php?id=<?= $item['product_id'] ?>" class="btn btn-sm btn-outline-warning" title="ดูรายละเอียด"><i class="bi bi-eye"></i></a>
                                             <a href="toggle_wishlist.php?product_id=<?= $item['product_id'] ?>&redirect=profile" class="btn btn-sm btn-outline-danger" title="ลบออกจากรายการโปรด"><i class="bi bi-trash"></i></a>
                                         </div>
                                     </li>

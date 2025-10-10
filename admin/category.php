@@ -49,8 +49,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_category'])) {
     }
 }
 // ดึงหมวดหมู่ทั้งหมด
+$search_term = trim($_GET['search'] ?? '');
 
-$categories = $conn->query("SELECT * FROM categories ORDER BY category_id ASC")->fetchAll(PDO::FETCH_ASSOC);
+$sql = "SELECT * FROM categories";
+$params = [];
+
+if ($search_term !== '') {
+    $sql .= " WHERE category_name LIKE ?";
+    $params[] = '%' . $search_term . '%';
+}
+
+$sql .= " ORDER BY category_id ASC";
+
+$stmt = $conn->prepare($sql);
+$stmt->execute($params);
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // โค้ดนี้เขียนต่อกันยาวบรรทัดเดียวได้เพราะ ผลลัพธ์จากเมธอดหนึ่งสามารถส่งต่อ (chaining) ให้เมธอดถัดไปทันที โดยไม่ต้อง
 // แยกตัวแปรเก็บไว้ก่อน
@@ -72,34 +85,7 @@ $categories = $conn->query("SELECT * FROM categories ORDER BY category_id ASC")-
     <title>จัดการหมวดหมู่</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            background: white;
-            min-height: 100vh;
-        }
-        .card {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        .admin-card {
-            border: none;
-            border-radius: 15px;
-        }
-        .admin-card .card-body {
-            padding: 2rem;
-            text-align: center;
-        }
-        .admin-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        .navbar-brand {
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="admin_main.css">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -110,8 +96,8 @@ $categories = $conn->query("SELECT * FROM categories ORDER BY category_id ASC")-
         <div class="row mb-5">
             <div class="col-12">
                 <div class="card admin-card shadow-lg">
-                    <div class="card-body">
-                        <h1 class="display-5 text-primary mb-3">
+                    <div class="card-body text-center">
+                        <h1 class="display-5 text-primary mb-3 fw-bold">
                             <i class="bi bi-tags"></i> จัดการหมวดหมู่
                         </h1>
                         <p class="lead text-muted">
@@ -138,11 +124,31 @@ $categories = $conn->query("SELECT * FROM categories ORDER BY category_id ASC")-
             <?php unset($_SESSION['success']); ?>
         <?php endif; ?>
 
+        <!-- Search Form -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card admin-card shadow-sm">
+                    <div class="card-body">
+                        <form method="get" class="row g-3 align-items-end">
+                            <div class="col-md-9">
+                                <label for="search" class="form-label"><i class="bi bi-search"></i> ค้นหาหมวดหมู่</label>
+                                <input type="text" name="search" id="search" class="form-control" placeholder="พิมพ์ชื่อหมวดหมู่..." value="<?= htmlspecialchars($search_term) ?>">
+                            </div>
+                            <div class="col-md-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel-fill"></i> ค้นหา</button>
+                                <a href="category.php" class="btn btn-outline-secondary" title="รีเซ็ต"><i class="bi bi-x-lg"></i></a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Add Category Form -->
         <div class="row mb-5">
             <div class="col-12">
                 <div class="card admin-card shadow-lg">
-                    <div class="card-header bg-info text-white">
+                    <div class="card-header bg-primary text-white">
                         <h5 class="mb-0">
                             <i class="bi bi-plus-circle"></i> เพิ่มหมวดหมู่ใหม่
                         </h5>
@@ -154,7 +160,7 @@ $categories = $conn->query("SELECT * FROM categories ORDER BY category_id ASC")-
                                 <input type="text" name="category_name" id="category_name" class="form-control" placeholder="ชื่อหมวดหมู่" required>
                             </div>
                             <div class="col-md-4 d-flex align-items-end">
-                                <button type="submit" name="add_category" class="btn btn-info btn-md w-100">
+                                <button type="submit" name="add_category" class="btn btn-primary btn-md w-100">
                                     <i class="bi bi-plus-circle"></i> เพิ่มหมวดหมู่
                                 </button>
                             </div>
@@ -167,7 +173,7 @@ $categories = $conn->query("SELECT * FROM categories ORDER BY category_id ASC")-
         <div class="row">
             <div class="col-12">
                 <div class="card admin-card shadow-lg">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-info text-white">
                         <h5 class="mb-0">
                             <i class="bi bi-list-ul"></i> รายการหมวดหมู่ทั้งหมด
                         </h5>
@@ -214,11 +220,12 @@ $categories = $conn->query("SELECT * FROM categories ORDER BY category_id ASC")-
                                                 </form>
                                             </td>
                                             <td class="py-3 text-center">
-                                                <a href="category.php?delete=<?= $cat['category_id'] ?>" 
-                                                   class="btn btn-outline-danger btn-sm"
-                                                   onclick="return confirm('คุณต้องการลบหมวดหมู่นี้หรือไม่?')">
+                                                <button type="button" class="btn btn-outline-danger btn-sm delete-category-button"
+                                                        data-category-id="<?= $cat['category_id'] ?>"
+                                                        data-category-name="<?= htmlspecialchars($cat['category_name']) ?>"
+                                                        title="ลบหมวดหมู่">
                                                     <i class="bi bi-trash"></i> ลบ
-                                                </a>
+                                                </button>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -234,5 +241,33 @@ $categories = $conn->query("SELECT * FROM categories ORDER BY category_id ASC")-
     <br>
     <?php require_once 'footer_admin.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-category-button');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const categoryId = this.dataset.categoryId;
+                    const categoryName = this.dataset.categoryName;
+
+                    Swal.fire({
+                        title: 'คุณแน่ใจหรือไม่?',
+                        text: `คุณต้องการลบหมวดหมู่ "${categoryName}" ใช่หรือไม่? `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'ลบ',
+                        cancelButtonText: 'ยกเลิก'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `category.php?delete=${categoryId}`;
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>

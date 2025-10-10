@@ -76,10 +76,62 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-$stmt = $conn->query("SELECT p.*, c.category_name FROM products p LEFT JOIN categories c ON
-p.category_id = c.category_id ORDER BY p.created_at DESC");
+// --- ส่วนจัดการการดึงข้อมูลสินค้า ---
+$search = trim($_GET['search'] ?? '');
+$filter_category_id = (int)($_GET['category_id'] ?? 0);
+
+// --- Pagination ---
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 10; // จำนวนสินค้าต่อหน้า
+$offset = ($page - 1) * $limit;
+
+// --- SQL Query ---
+$base_query = "
+    SELECT p.*, c.category_name 
+    FROM products p 
+    LEFT JOIN categories c ON p.category_id = c.category_id
+";
+
+$conditions = [];
+$params = [];
+
+if ($search !== '') {
+    $conditions[] = "p.product_name LIKE ?";
+    $params[] = '%' . $search . '%';
+}
+
+if ($filter_category_id > 0) {
+    $conditions[] = "p.category_id = ?";
+    $params[] = $filter_category_id;
+}
+
+// --- นับจำนวนสินค้าทั้งหมดสำหรับ Pagination ---
+$count_query = "SELECT COUNT(p.product_id) FROM products p";
+if (!empty($conditions)) {
+    $count_query .= " WHERE " . implode(' AND ', $conditions);
+}
+$count_stmt = $conn->prepare($count_query);
+$count_stmt->execute($params);
+$total_products = $count_stmt->fetchColumn();
+$total_pages = ceil($total_products / $limit);
+
+// --- ดึงข้อมูลสินค้าสำหรับหน้าปัจจุบัน ---
+$final_query = $base_query;
+if (!empty($conditions)) {
+    $final_query .= " WHERE " . implode(' AND ', $conditions);
+}
+$final_query .= " ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset";
+
+$stmt = $conn->prepare($final_query);
+$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+foreach ($params as $key => $value) {
+    $stmt->bindValue($key + 1, $value);
+}
+$stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-// ดึงหมวดหมู่
+
+// --- ดึงหมวดหมู่ทั้งหมดสำหรับฟอร์ม ---
 $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -92,40 +144,7 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            background: white;
-            min-height: 100vh;
-        }
-
-        .card {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .admin-card {
-            border: none;
-            border-radius: 15px;
-        }
-
-        .admin-card .card-body {
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .admin-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="admin_main.css">
 </head>
 
 <body>
@@ -137,8 +156,8 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
         <div class="row mb-5">
             <div class="col-12">
                 <div class="card admin-card shadow-lg">
-                    <div class="card-body">
-                        <h1 class="display-5 text-primary mb-3">
+                    <div class="card-body text-center">
+                        <h1 class="display-5 text-primary mb-3 fw-bold">
                             <i class="bi bi-box-seam"></i> จัดการสินค้า
                         </h1>
                         <p class="lead text-muted">
@@ -227,6 +246,37 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
             </div>
             </div>
         </div>
+
+        <!-- Search and Filter Form -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card admin-card shadow-sm">
+                    <div class="card-body">
+                        <form method="get" class="row g-3 align-items-end">
+                            <div class="col-md-5">
+                                <label for="search" class="form-label"><i class="bi bi-search"></i> ค้นหาชื่อสินค้า</label>
+                                <input type="text" name="search" id="search" class="form-control" placeholder="พิมพ์ชื่อสินค้า..." value="<?= htmlspecialchars($search) ?>">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="filter_category_id" class="form-label"><i class="bi bi-tags"></i> กรองตามหมวดหมู่</label>
+                                <select name="category_id" id="filter_category_id" class="form-select">
+                                    <option value="0">ทุกหมวดหมู่</option>
+                                    <?php foreach ($categories as $cat): ?>
+                                        <option value="<?= $cat['category_id'] ?>" <?= ($filter_category_id === $cat['category_id']) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($cat['category_name']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel-fill"></i> กรองข้อมูล</button>
+                                <a href="products.php" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- Products Table Section -->
         <div class="row">
@@ -249,8 +299,8 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
                                     <i class="bi bi-list-ul"></i> รายการสินค้า
                                 </h5>
                                 <div class="d-flex gap-3">
-                                    <div class="badge bg-light text-dark fs-6">
-                                        <i class="bi bi-box-seam"></i> ทั้งหมด: <?= count($products) ?> รายการ
+                                    <div class="badge bg-light text-dark fs-6"> 
+                                        <i class="bi bi-box-seam"></i> ทั้งหมด: <?= $total_products ?> รายการ
                                     </div>
                                     <div class="badge bg-success fs-6">
                                         <i class="bi bi-check-circle"></i> สินค้าใหม่วันนี้:
@@ -324,14 +374,14 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
                                                     <div class="btn-group" role="group">
                                                     </div> <a href="edit_products.php?id=<?= $p['product_id'] ?>"
                                                         class="btn btn-sm btn-outline-warning" title="แก้ไขสินค้า">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </a>
-
-                                                    <a href="products.php?delete=<?= $p['product_id'] ?>"
-                                                        class="btn btn-sm btn-outline-danger" title="ลบสินค้า"
-                                                        onclick="return confirm('ต้องการลบสินค้า <?= htmlspecialchars($p['product_name']) ?> ?\n\nการดำเนินการนี้ไม่สามารถย้อนกลับได้!')">
+                                                        <i class="bi bi-pencil"></i> 
+                                                    </a> 
+                                                    <button type="button" class="btn btn-sm btn-outline-danger delete-product-button"
+                                                            data-product-id="<?= $p['product_id'] ?>"
+                                                            data-product-name="<?= htmlspecialchars($p['product_name']) ?>"
+                                                            title="ลบสินค้า">
                                                         <i class="bi bi-trash"></i>
-                                                    </a>
+                                                    </button>
                             </div>
                             </td>
                             </tr>
@@ -340,12 +390,32 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
                         </table>
                         </div>
                     </div>
-                    <div class="card-footer bg-light text-muted text-center">
-                        <small>
-                            <i class="bi bi-info-circle"></i>
-                            สามารถแก้ไขหรือลบข้อมูลสินค้าได้ตามต้องการ
-                        </small>
-                    </div>
+                    <!-- Pagination -->
+                    <?php if ($total_pages > 1): ?>
+                        <div class="card-footer bg-white">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center mb-0">
+                                    <?php
+                                    // เก็บ query string เดิมไว้
+                                    $query_params = $_GET;
+                                    unset($query_params['page']);
+                                    $query_string = http_build_query($query_params);
+                                    ?>
+                                    <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page=<?= $page - 1 ?>&<?= $query_string ?>">ก่อนหน้า</a>
+                                    </li>
+                                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                        <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
+                                            <a class="page-link" href="?page=<?= $i ?>&<?= $query_string ?>"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+                                    <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page=<?= $page + 1 ?>&<?= $query_string ?>">ถัดไป</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    <?php endif; ?>
             </div>
         <?php endif; ?>
         </div>
@@ -356,6 +426,34 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous">
+    </script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-product-button');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    const productName = this.dataset.productName;
+
+                    Swal.fire({
+                        title: 'คุณแน่ใจหรือไม่?',
+                        text: `คุณต้องการลบสินค้า "${productName}" ใช่หรือไม่? `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'ลบ',
+                        cancelButtonText: 'ยกเลิก'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `products.php?delete=${productId}`;
+                        }
+                    });
+                });
+            });
+        });
     </script>
 </body>
 

@@ -13,7 +13,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <!-- Navigation Bar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="index.php">
+        <a class="navbar-brand" href="index.php">
             <i class="bi bi-shop"></i> BoboIT Shop
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -69,7 +69,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <a href="login.php" class="btn btn-success me-2">เข้าสู่ระบบ</a>
                     </li>
                     <li class="nav-item">
-                        <a href="register.php" class="btn btn-primary">สมัครสมาชิก</a>
+                        <a href="register.php" class="btn btn-dark">สมัครสมาชิก</a>
                     </li>
                 <?php endif; ?>
             </ul>

@@ -90,6 +90,7 @@ exit;
     <title>ตะกร้าสินค้า - BoboIT Shop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
     <style>
         body {
             background-color: #f8f9fa;
@@ -105,6 +106,11 @@ exit;
         .quantity-input {
             max-width: 90px;
         }
+
+        .text-warning {
+            color: #fd7e14 !important;
+        }
+
     </style>
 </head>
 
@@ -124,8 +130,8 @@ exit;
                     <i class="bi bi-cart-x display-1 text-muted"></i>
                     <h4 class="mt-3">ตะกร้าของคุณว่างเปล่า</h4>
                     <p class="text-muted">เลือกซื้อสินค้าที่คุณสนใจได้เลย</p>
-                    <a href="products.php" class="btn btn-primary mt-2">
-                        <i class="bi bi-arrow-left"></i> กลับไปเลือกซื้อสินค้า
+                    <a href="products.php" class="btn btn-warning mt-2">
+                        <i class="bi bi-arrow-left"></i> กลับไปเลือกซื้อสินค้า 
                     </a>
                 </div>
             </div>
@@ -165,9 +171,12 @@ exit;
                                                     <td class="text-end"><?= number_format($item['price'], 2) ?></td>
                                                     <td class="text-end fw-bold"><?= number_format($item['price'] * $item['quantity'], 2) ?></td>
                                                     <td class="text-center">
-                                                        <a href="cart.php?remove=<?= $item['cart_id'] ?>" class="btn btn-sm btn-outline-danger" title="ลบสินค้า" onclick="return confirm('คุณต้องการลบสินค้านี้ออกจากตะกร้าหรือไม่?')">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger delete-cart-item-button"
+                                                                data-cart-id="<?= $item['cart_id'] ?>"
+                                                                data-product-name="<?= htmlspecialchars($item['product_name']) ?>"
+                                                                title="ลบสินค้า">
                                                             <i class="bi bi-trash"></i>
-                                                        </a>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
@@ -176,7 +185,7 @@ exit;
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                     <a href="products.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> เลือกซื้อสินค้าต่อ</a>
-                                    <button type="submit" name="update_cart" class="btn btn-primary"><i class="bi bi-arrow-clockwise"></i> อัปเดตตะกร้า</button>
+                                    <button type="submit" name="update_cart" class="btn btn-warning"><i class="bi bi-arrow-clockwise"></i> อัปเดตตะกร้า</button>
                                 </div>
                             </div>
                         </div>
@@ -194,7 +203,7 @@ exit;
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
                                         ยอดสุทธิ
-                                        <span class="fs-5 text-primary"><?= number_format($total, 2) ?> บาท</span>
+                                        <span class="fs-5 text-warning"><?= number_format($total, 2) ?> บาท</span>
                                     </li>
                                 </ul>
                                 <div class="d-grid mt-3">
@@ -212,6 +221,34 @@ exit;
 
     <?php require_once 'footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-cart-item-button');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const cartId = this.dataset.cartId;
+                    const productName = this.dataset.productName;
+
+                    Swal.fire({
+                        title: 'คุณแน่ใจหรือไม่?',
+                        text: `คุณต้องการลบ "${productName}" ออกจากตะกร้าใช่หรือไม่?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'ลบ',
+                        cancelButtonText: 'ยกเลิก'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `cart.php?remove=${cartId}`;
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

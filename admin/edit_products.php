@@ -91,40 +91,17 @@ WHERE product_id = ?";
     <title>แก้ไขสินค้า - ระบบจัดการร้านค้า</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="admin_main.css">
     <style>
         body {
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh; 
         }
 
         .card {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .admin-card {
-            border: none;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.95);
+            /* background: rgba(255, 255, 255, 0.95); */
+            background: white;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-        }
-
-        .admin-card .card-body {
-            padding: 2rem;
-        }
-
-        .admin-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .navbar-brand {
-            font-weight: bold;
         }
 
         /* Dropdown Styles */
@@ -180,38 +157,17 @@ WHERE product_id = ?";
         }
 
         .form-control:focus, .form-select:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            border-color: #fd7e14;
+            box-shadow: 0 0 0 0.25rem rgba(253, 126, 20, 0.25);
             background: white;
         }
 
         /* Button Styles */
         .btn {
-            border-radius: 8px;
+            border-radius: 8px; 
             padding: 0.75rem 1.5rem;
             font-weight: 600;
             transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-            border: none;
-        }
-
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
-            transform: translateY(-2px);
         }
 
         /* Image Preview */
@@ -225,7 +181,7 @@ WHERE product_id = ?";
         }
 
         .image-preview:hover {
-            border-color: #007bff;
+            border-color: #0d6efd;
             background: rgba(227, 242, 253, 0.8);
         }
 
@@ -247,7 +203,7 @@ WHERE product_id = ?";
         }
 
         .display-5 {
-            color: #007bff;
+            color: #0d6efd;
         }
     </style>
 </head>
@@ -262,7 +218,7 @@ WHERE product_id = ?";
             <div class="col-12">
                 <div class="card admin-card shadow-lg">
                     <div class="card-body text-center">
-                        <h1 class="display-5 text-primary mb-3">
+                        <h1 class="display-5 text-primary mb-3 fw-bold">
                             <i class="bi bi-pencil-square"></i> แก้ไขสินค้า
                         </h1>
                         <p class="lead text-muted">

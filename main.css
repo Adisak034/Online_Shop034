@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100..900&display=swap');
+
+body {
+    background: #F8F8F8;
+    min-height: 100vh;
+    font-family: "Noto Sans Thai", sans-serif;
+}
+
+.navbar {
+    background: #fd7e14 !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1030;
+    position: relative;
+}
+
+.navbar-brand {
+    font-weight: 700; /* Bold */
+    color: white !important;
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffc107 !important;
+    transform: translateY(-2px);
+}
+
+.navbar-nav .nav-link.active {
+    font-weight: 700; /* Bold */
+}
+
+.btn-warning, .btn-primary {
+    background-color: #fd7e14;
+    border-color: #fd7e14;
+    color: #fff;
+}
+
+.btn-warning:hover, .btn-primary:hover {
+    background-color: #e6700f;
+    border-color: #d96a0e;
+    color: #fff;
+}
+
+.bg-primary {
+    background-color: #fd7e14 !important;
+}
+
+.text-primary {
+    color: #fd7e14 !important;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+    background-color: #fd7e14;
+    color: #fff !important;
+}
+
+.btn-outline-warning {
+    color: #fd7e14;
+    border-color: #fd7e14;
+}
+
+.btn-outline-warning:hover {
+    color: #fff;
+    background-color: #fd7e14;
+    border-color: #fd7e14;
+}

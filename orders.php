@@ -28,13 +28,17 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>ประวัติการสั่งซื้อ - BoboIT Shop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
     <style>
         body {
             background-color: #f8f9fa;
         }
         .accordion-button:not(.collapsed) {
-            color: #0c63e4;
-            background-color: #e7f1ff;
+            color: #fff;
+            background-color: #fd7e14;
+        }
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(253, 126, 20, 0.25);
         }
         .order-item-img {
             width: 60px;
@@ -66,7 +70,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <i class="bi bi-bag-x display-1 text-muted"></i>
                     <h4 class="mt-3">คุณยังไม่มีคำสั่งซื้อ</h4>
                     <p class="text-muted">คำสั่งซื้อทั้งหมดของคุณจะแสดงที่นี่</p>
-                    <a href="products.php" class="btn btn-primary mt-2">
+                    <a href="products.php" class="btn btn-warning mt-2">
                         <i class="bi bi-arrow-left"></i> เริ่มเลือกซื้อสินค้า
                     </a>
                 </div>
@@ -79,8 +83,8 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <button class="accordion-button <?= $index > 0 ? 'collapsed' : '' ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?= $order['order_id'] ?>" aria-expanded="<?= $index === 0 ? 'true' : 'false' ?>" aria-controls="collapse<?= $order['order_id'] ?>">
                                 <div class="d-flex w-100 justify-content-between">
                                     <span><strong>คำสั่งซื้อ #<?= $order['order_id'] ?></strong></span>
-                                    <span class="me-3">วันที่: <?= date('d/m/Y', strtotime($order['order_date'])) ?></span>
-                                    <span class="badge bg-primary"><?= ucfirst($order['status']) ?></span>
+                                    <span class="me-3">วันที่: <?= date('d/m/Y', strtotime($order['order_date'])) ?></span> 
+                                    <span class="badge bg-warning text-dark"><?= ucfirst($order['status']) ?></span>
                                 </div>
                             </button>
                         </h2>

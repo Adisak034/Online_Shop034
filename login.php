@@ -40,10 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>เข้าสู่ระบบ - BoboIT Shop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100..900&display=swap" rel="stylesheet">
     <style>
         html,
         body {
             height: 100%;
+            font-family: "Noto Sans Thai", sans-serif;
         }
 
         body {
@@ -78,8 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <main class="form-signin w-100 m-auto">
         <div class="card shadow-lg">
             <div class="card-body p-4 p-md-5">
-                <div class="text-center mb-4">
-                    <h1 class="h3 mb-3 fw-bold text-primary"><i class="bi bi-shop"></i> BoboIT Shop</h1>
+                <div class="text-center mb-4"> 
+                    <h1 class="h3 mb-3 fw-bold text-warning"><i class="bi bi-shop"></i> BoboIT Shop</h1>
                     <h2 class="h4 mb-3 fw-normal">เข้าสู่ระบบ</h2>
                 </div>
 
@@ -107,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="password" name="password" class="form-control" placeholder="รหัสผ่าน" required>
                     </div>
 
-                    <button class="w-100 btn btn-lg btn-primary" type="submit">เข้าสู่ระบบ</button>
+                    <button class="w-100 btn btn-lg btn-warning" type="submit">เข้าสู่ระบบ</button>
 
                     <hr class="my-4">
 

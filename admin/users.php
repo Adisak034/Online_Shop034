@@ -18,11 +18,43 @@ if (isset($_GET['delete'])) {
     header("Location: users.php");
     exit;
 }
-// ดึงข้อมูลสมาชิก
-$stmt = $conn->prepare("SELECT * FROM users WHERE role = 'member' ORDER BY created_at DESC");
+// --- ส่วนจัดการการดึงข้อมูลสมาชิก ---
+$search_term = trim($_GET['search'] ?? '');
+// --- Pagination ---
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 10; // จำนวนสมาชิกต่อหน้า
+$offset = ($page - 1) * $limit;
+
+// --- SQL Query ---
+$base_sql = "FROM users WHERE role = 'member'";
+$conditions_sql = "";
+$params = [];
+
+if ($search_term !== '') {
+    $conditions_sql = " AND (username LIKE ? OR email LIKE ?)";
+    $params[] = '%' . $search_term . '%';
+    $params[] = '%' . $search_term . '%';
+}
+
+// --- นับจำนวนสมาชิกทั้งหมดสำหรับ Pagination ---
+$count_sql = "SELECT COUNT(*) " . $base_sql . $conditions_sql;
+$count_stmt = $conn->prepare($count_sql);
+$count_stmt->execute($params);
+$total_users = $count_stmt->fetchColumn();
+$total_pages = ceil($total_users / $limit);
+
+// --- ดึงข้อมูลสมาชิกสำหรับหน้าปัจจุบัน ---
+$sql = "SELECT * " . $base_sql . $conditions_sql . " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+$stmt = $conn->prepare($sql);
+foreach ($params as $key => $value) {
+    $stmt->bindValue($key + 1, $value);
+}
+$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 <!DOCTYPE html>
 <html lang="th">
 
@@ -32,34 +64,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>จัดการสมาชิก</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-  body {
-            background: white;
-            min-height: 100vh;
-        }
-        .card {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        .admin-card {
-            border: none;
-            border-radius: 15px;
-        }
-        .admin-card .card-body {
-            padding: 2rem;
-            text-align: center;
-        }
-        .admin-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        .navbar-brand {
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="admin_main.css">
 </head>
 
 <body>
@@ -71,8 +76,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="row mb-5">
             <div class="col-12">
                 <div class="card admin-card shadow-lg">
-                    <div class="card-body">
-                        <h1 class="display-5 text-primary mb-3">
+                    <div class="card-body text-center">
+                        <h1 class="display-5 text-primary mb-3 fw-bold">
                             <i class="bi bi-people"></i> จัดการสมาชิก
                         </h1>
                         <p class="lead text-muted">
@@ -83,10 +88,30 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
 
+        <!-- Search Form -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card admin-card shadow-sm">
+                    <div class="card-body">
+                        <form method="get" class="row g-3 align-items-end">
+                            <div class="col-md-9">
+                                <label for="search" class="form-label"><i class="bi bi-search"></i> ค้นหาสมาชิก (ชื่อผู้ใช้ หรือ อีเมล)</label>
+                                <input type="text" name="search" id="search" class="form-control" placeholder="พิมพ์เพื่อค้นหา..." value="<?= htmlspecialchars($search_term) ?>">
+                            </div>
+                            <div class="col-md-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel-fill"></i> ค้นหา</button>
+                                <a href="users.php" class="btn btn-outline-secondary" title="รีเซ็ต"><i class="bi bi-x-lg"></i></a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Users Table Section -->
         <div class="row">
             <div class="col-12">
-                <?php if (count($users) === 0): ?>
+                <?php if (empty($users)): ?>
                     <div class="card admin-card shadow-lg">
                         <div class="card-body text-center py-5">
                             <div class="admin-icon text-muted">
@@ -105,7 +130,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </h5>
                                 <div class="d-flex gap-3">
                                     <div class="badge bg-light text-dark fs-6">
-                                        <i class="bi bi-people"></i> ทั้งหมด: <?= count($users) ?> คน
+                                        <i class="bi bi-people"></i> ทั้งหมด: <?= $total_users ?> คน
                                     </div>
                                     <div class="badge bg-success fs-6">
                                         <i class="bi bi-check-circle"></i> สมาชิกใหม่วันนี้: 
@@ -125,6 +150,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <table class="table table-hover mb-0">
                                     <thead class="table-dark">
                                         <tr>
+                                            <th scope="col">
+                                                <i class="bi bi-hash"></i> ID
+                                            </th>
                                             <th scope="col">
                                                 <i class="bi bi-person"></i> ชื่อผู้ใช้
                                             </th>
@@ -146,11 +174,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <?php foreach ($users as $user): ?>
                                             <tr>
                                                 <td>
-                                                    <div>
-                                                        <strong><?= htmlspecialchars($user['username']) ?></strong>
-                                                        <br>
-                                                        <small class="text-muted">User ID: <?= $user['user_id'] ?></small>
-                                                    </div>
+                                                    <span class="badge bg-secondary"><?= $user['user_id'] ?></span>
+                                                </td>
+                                                <td>
+                                                    <strong><?= htmlspecialchars($user['username']) ?></strong>
                                                 </td>
                                                 <td>
                                                     <?php if ($user['full_name']): ?>
@@ -160,9 +187,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     <?php endif; ?>
                                                 </td>
                                                 <td>
-                                                    <span class="badge bg-light text-dark">
-                                                        <?= htmlspecialchars($user['email']) ?>
-                                                    </span>
+                                                    <?= htmlspecialchars($user['email']) ?>
                                                 </td>
                                                 <td>
                                                     <?php 
@@ -179,20 +204,17 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     }
                                                     ?>
                                                 </td>
-                                                <td class="text-center">
-                                                    <div class="btn-group" role="group">
+                                                <td class="text-center"> 
+                                                    <div class="d-inline-flex gap-1" role="group">
                                                         <a href="edit_user.php?id=<?= $user['user_id'] ?>"
                                                             class="btn btn-sm btn-outline-warning"
                                                             title="แก้ไขข้อมูล">
                                                             <i class="bi bi-pencil"></i>
-                                                        </a>
-                                                                <form action="delUser_Sweet.php" method="POST" style="display:inline;">
-                                                                    <input type="hidden" name="u_id" value="<?= $user['user_id'] ?>">
-                                                                    <button type="button" class="delete-button btn btn-outline-danger btn-sm" 
-                                                                            data-user-id="<?= $user['user_id'] ?>" title="ลบสมาชิก">
-                                                                        <i class="bi bi-trash"></i>
-                                                                    </button>
-                                                                </form>
+                                                        </a> 
+                                                        <button type="button" class="delete-button btn btn-sm btn-outline-danger" 
+                                                                data-user-id="<?= $user['user_id'] ?>" title="ลบสมาชิก">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -201,12 +223,31 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </table>
                             </div>
                         </div>
-                        <div class="card-footer bg-light text-muted text-center">
-                            <small>
-                                <i class="bi bi-info-circle"></i> 
-                                สามารถแก้ไขหรือลบข้อมูลสมาชิกได้ตามต้องการ
-                            </small>
-                        </div>
+                        <!-- Pagination -->
+                        <?php if ($total_pages > 1): ?>
+                            <div class="card-footer bg-white">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center mb-0">
+                                        <?php
+                                        $query_params = $_GET;
+                                        unset($query_params['page']);
+                                        $query_string = http_build_query($query_params);
+                                        ?>
+                                        <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?page=<?= $page - 1 ?>&<?= $query_string ?>">ก่อนหน้า</a>
+                                        </li>
+                                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                            <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
+                                                <a class="page-link" href="?page=<?= $i ?>&<?= $query_string ?>"><?= $i ?></a>
+                                            </li>
+                                        <?php endfor; ?>
+                                        <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?page=<?= $page + 1 ?>&<?= $query_string ?>">ถัดไป</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
             </div>

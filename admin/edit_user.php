@@ -109,34 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>แก้ไขสมาชิก</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            background: white;
-            min-height: 100vh;
-        }
-        .card {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        .admin-card {
-            border: none;
-            border-radius: 15px;
-        }
-        .admin-card .card-body {
-            padding: 2rem;
-            text-align: center;
-        }
-        .admin-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        .navbar-brand {
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="admin_main.css">
 </head>
 
 <body>
@@ -149,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="col-12">
                 <div class="card admin-card shadow-lg">
                     <div class="card-body text-center">
-                        <h1 class="display-5 text-primary mb-3">
+                        <h1 class="display-5 text-primary mb-3 fw-bold">
                             <i class="bi bi-person-gear"></i> แก้ไขข้อมูลสมาชิก
                         </h1>
                         <p class="lead text-muted">
@@ -183,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row">
             <div class="col-12">
                 <div class="card admin-card shadow-lg">
-                    <div class="card-header bg-warning text-white">
+                    <div class="card-header bg-primary text-white">
                         <h5 class="mb-0 text-dark">
                             <i class="bi bi-pencil-square"></i> ฟอร์มแก้ไขข้อมูล
                         </h5>
@@ -217,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="password" name="confirm_password" id="confirm_password" class="form-control">
                             </div>
                             <div class="col-12 text-center mt-4">
-                                <button type="submit" class="btn btn-warning btn-lg text-dark">
+                                <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="bi bi-check-circle"></i> บันทึกการแก้ไข
                                 </button>
                                 <a href="users.php" class="btn btn-secondary btn-lg ms-2">

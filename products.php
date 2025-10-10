@@ -80,44 +80,10 @@ if ($isLoggedIn) {
     <title><?= $page_title ?> - BoboIT Shop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
     <style>
         body {
             background: #F8F8F8;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .navbar {
-            background: #007bff !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .navbar-nav .nav-link {
-            color: white !important;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: #ffc107 !important;
-            transform: translateY(-2px);
-        }
-
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            min-width: 200px;
-            padding: 0.5rem 0;
-            z-index: 9999;
-            position: absolute;
-        }
-
-        .dropdown-item {
-            padding: 0.5rem 1rem;
-            transition: background-color 0.3s ease;
-            white-space: nowrap;
         }
 
         .dropdown-item:hover {
@@ -137,11 +103,6 @@ if ($isLoggedIn) {
 
         .dropdown-divider {
             margin: 0.5rem 0;
-        }
-
-        .navbar {
-            z-index: 1030;
-            position: relative;
         }
 
         .card {
@@ -168,11 +129,6 @@ if ($isLoggedIn) {
         .badge {
             border-radius: 10px;
             font-weight: 500;
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            color: white !important;
         }
 
         .product-card {
@@ -207,7 +163,7 @@ if ($isLoggedIn) {
         .product-meta {
             font-size: .8rem;
             letter-spacing: .05em;
-            color: #007bff;
+            color: #fd7e14;
             text-transform: uppercase;
             font-weight: 600;
         }
@@ -222,7 +178,7 @@ if ($isLoggedIn) {
         .price {
             font-weight: 700;
             font-size: 1.2rem;
-            color: #007bff;
+            color: #fd7e14;
         }
 
         .rating i {
@@ -269,10 +225,10 @@ if ($isLoggedIn) {
         <!-- Page Header -->
         <div class="p-4 mb-4 page-header shadow-sm">
             <div class="d-flex justify-content-between align-items-center">
-                <h1 class="display-6 mb-0"><?= $page_title ?></h1>
+                <h1 class="display-6 mb-0 fw-bold"><?= $page_title ?></h1>
                 <form action="products.php" method="GET" class="d-flex">
-                    <input type="text" class="form-control me-2" placeholder="ค้นหาสินค้า..." name="search" value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
-                    <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                    <input type="text" class="form-control me-2" placeholder="ค้นหาสินค้า..." name="search" value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>"> 
+                    <button class="btn btn-dark" type="submit"><i class="bi bi-search"></i></button>
                 </form>
             </div>
         </div>
@@ -291,7 +247,7 @@ if ($isLoggedIn) {
                     ? 'product_images/' . rawurlencode($p['image'])
                     : 'product_images/no-image.jpg';
                 $isNew = isset($p['created_at']) && (time() - strtotime($p['created_at']) <= 7 * 24 * 3600);
-                $isHot = (int)$p['stock'] > 0 && (int)$p['stock'] < 5;
+                $isHot = (int)$p['stock'] > 0 && (int)$p['stock'] < 10;
                 $rating = (float)($p['average_rating'] ?? 0);
                 $in_wishlist = in_array($p['product_id'], $wishlist_items);
                 $full = floor($rating);
@@ -338,10 +294,10 @@ if ($isLoggedIn) {
                                         <div class="d-flex gap-2">
                                             <form action="cart.php" method="post" style="display: inline;">
                                                 <input type="hidden" name="product_id" value="<?= (int)$p['product_id'] ?>">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn btn-sm btn-primary">เพิ่มในตะกร้า</button>
+                                                <input type="hidden" name="quantity" value="1"> 
+                                                <button type="submit" class="btn btn-sm btn-warning">เพิ่มในตะกร้า</button>
                                             </form>
-                                            <a href="product_detail.php?id=<?= (int)$p['product_id'] ?>" class="btn btn-sm btn-outline-primary">ดูรายละเอียด</a>
+                                            <a href="product_detail.php?id=<?= (int)$p['product_id'] ?>" class="btn btn-sm btn-outline-warning">ดูรายละเอียด</a>
                                         </div>
                                     <?php else : ?>
                                         <span class="badge bg-danger">สินค้าหมด</span>

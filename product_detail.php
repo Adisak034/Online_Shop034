@@ -109,30 +109,10 @@ if ($isLoggedIn) {
     <title>รายละเอียดสินค้า - <?= isset($product['product_name']) ? htmlspecialchars($product['product_name']) : 'ไม่พบสินค้า' ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
     <style>
         body {
             background: white;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .navbar {
-            background: #007bff !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 1030;
-            position: relative;
-        }
-
-        .navbar-nav .nav-link {
-            color: white !important;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: #ffc107 !important;
-            transform: translateY(-2px);
         }
 
         .dropdown-menu {
@@ -195,15 +175,10 @@ if ($isLoggedIn) {
             font-weight: 500;
         }
 
-        .navbar-brand {
-            font-weight: bold;
-            color: white !important;
-        }
-
         .product-price {
             font-size: 2.5rem;
             font-weight: bold;
-            color: #007bff;
+            color: #fd7e14;
         }
 
         .rating i {
@@ -224,7 +199,7 @@ if ($isLoggedIn) {
 
         .review-card {
             background-color: #f8f9fa;
-            border-left: 4px solid #007bff;
+            border-left: 4px solid #fd7e14;
         }
 
         .review-author {
@@ -251,6 +226,9 @@ if ($isLoggedIn) {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
             padding: 0.75rem 1rem;
+        }
+        .breadcrumb a {
+            color: #fd7e14;
         }
 
         .product-image {
@@ -309,7 +287,7 @@ if ($isLoggedIn) {
 
                         <!-- Details Column -->
                         <div class="col-lg-6 d-flex flex-column">
-                            <span class="badge bg-primary align-self-start mb-2"><?= htmlspecialchars($product['category_name'] ?? 'ไม่มีหมวดหมู่') ?></span>
+                            <span class="badge bg-warning text-dark align-self-start mb-2"><?= htmlspecialchars($product['category_name'] ?? 'ไม่มีหมวดหมู่') ?></span>
                             <h1 class="display-6 mb-3"><?= htmlspecialchars($product['product_name']) ?></h1>
 
                             <!-- Rating -->
@@ -474,8 +452,8 @@ if ($isLoggedIn) {
                                                 <?php endif; ?>
 
                                                 <?php if ($isLoggedIn && $review['user_id'] === $user_id): ?>
-                                                    <div class="mt-2 text-end">
-                                                        <a href="product_detail.php?id=<?= $product_id ?>&edit_review=<?= $review['review_id'] ?>#reviews-section" class="btn btn-sm btn-outline-primary">
+                                                    <div class="mt-2 text-end d-flex gap-2 justify-content-end">
+                                                        <a href="product_detail.php?id=<?= $product_id ?>&edit_review=<?= $review['review_id'] ?>#reviews-section" class="btn btn-sm btn-outline-warning">
                                                             <i class="bi bi-pencil-square"></i> แก้ไข
                                                         </a>
                                                         <a href="product_detail.php?id=<?= $product_id ?>&delete_review=<?= $review['review_id'] ?>#reviews-section" class="btn btn-sm btn-outline-danger" onclick="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรีวิวนี้?')">

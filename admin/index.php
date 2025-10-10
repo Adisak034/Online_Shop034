@@ -28,34 +28,7 @@ if (class_exists('NumberFormatter')) {
     <title>แผงควบคุมผู้ดูแลระบบ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            background: white;
-            min-height: 100vh;
-        }
-        .card {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        .admin-card {
-            border: none;
-            border-radius: 15px;
-        }
-        .admin-card .card-body {
-            padding: 2rem;
-            text-align: center;
-        }
-        .admin-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        .navbar-brand {
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="admin_main.css">
 </head>
 
 <body>
@@ -67,9 +40,9 @@ if (class_exists('NumberFormatter')) {
         <div class="row mb-5">
             <div class="col-12">
                 <div class="card admin-card shadow-lg">
-                    <div class="card-body">
-                        <h1 class="display-5 text-primary mb-3">
-                            <i class="bi bi-speedometer2"></i> Dashboard
+                    <div class="card-body text-center">
+                        <h1 class="display-5 text-primary mb-3 fw-bold">
+                            <i class="bi bi-speedometer2"></i> Dashboard 
                         </h1>
                         <p class="lead text-muted">
                             ยินดีต้อนรับเข้าสู่ระบบจัดการ, <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>
@@ -114,12 +87,12 @@ if (class_exists('NumberFormatter')) {
             <div class="col-lg-3 col-md-6">
                 <div class="card admin-card shadow-lg border-0">
                     <div class="card-body">
-                        <div class="admin-icon text-warning">
+                        <div class="admin-icon text-info">
                             <i class="bi bi-people"></i>
                         </div>
                         <h5 class="card-title">จัดการสมาชิก</h5>
                         <p class="card-text text-muted">จัดการข้อมูลผู้ใช้</p>
-                        <a href="users.php" class="btn btn-warning btn-lg w-100">
+                        <a href="users.php" class="btn btn-info btn-lg w-100">
                             <i class="bi bi-arrow-right-circle"></i> เข้าจัดการ
                         </a>
                     </div>
@@ -178,7 +151,7 @@ if (class_exists('NumberFormatter')) {
                             <div class="col-md-3 col-6 mb-3">
                                 <a href="users.php" class="text-decoration-none text-dark">
                                     <div class="border-end">
-                                        <h3 class="text-warning">
+                                        <h3 class="text-info">
                                             <i class="bi bi-person-check"></i> <?= $total_users ?>
                                         </h3>
                                         <h4>สมาชิก</h4>
@@ -188,7 +161,7 @@ if (class_exists('NumberFormatter')) {
                             </div>
                             <div class="col-md-3 col-6 mb-3">
                                 <a href="orders.php" class="text-decoration-none text-dark">
-                                    <h3 class="text-info">
+                                    <h3 class="text-dark">
                                         <i class="bi bi-cash-stack"></i>
                                     </h3>
                                     <h4>ยอดขายรวม</h4>

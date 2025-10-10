@@ -2,8 +2,8 @@
 // -----------------------------
 // ฟังกช์ นั ดงึรำยกำรสนิ คำ้ในค ำสั่งซอื้
 // -----------------------------
-function getOrderItems($pdo, $order_id) {
-$stmt = $pdo->prepare("SELECT oi.quantity, oi.price, p.product_name
+function getOrderItems($pdo, $order_id) { 
+$stmt = $pdo->prepare("SELECT oi.quantity, oi.price, p.product_name, p.image
 FROM order_items oi
 JOIN products p ON oi.product_id = p.product_id
 WHERE oi.order_id = ?");
